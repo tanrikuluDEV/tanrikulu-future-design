@@ -1,867 +1,226 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tanrikulu.dev — A Design Atelier</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root{
-    --cream: #EFE7D8;
-    --cream-2: #E6DCC9;
-    --ink: #3A322B;
-    --ink-soft: rgba(58,50,43,0.66);
-    --ink-faint: rgba(58,50,43,0.42);
-    --terracotta: #BC5E38;
-    --rose: #CC8E7E;
-    --sage: #8E9C72;
-    --ochre: #CF9A48;
-    --plum: #7E566A;
-    --glass-bg: linear-gradient(135deg, rgba(255,252,246,0.55), rgba(255,250,240,0.28));
-    --glass-brd: rgba(120,95,70,0.20);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Tanrikulu.dev — Mobile App, Web &amp; Brand Design Studio</title>
+  <meta name="description" content="Independent studio designing and building iOS &amp; Android apps, fast Next.js websites and brand identities, from the first call to launch and beyond." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="author" content="Tanrikulu.dev" />
+  <meta name="theme-color" content="#E9E7E1" />
+  <link rel="canonical" href="https://tanrikulu.dev/" />
+  <link rel="alternate" hreflang="en" href="https://tanrikulu.dev/" />
+  <link rel="alternate" hreflang="tr" href="https://tanrikulu.dev/tr" />
+  <link rel="alternate" hreflang="x-default" href="https://tanrikulu.dev/" />
+  <meta property="og:site_name" content="Tanrikulu.dev" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tanrikulu.dev/" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="tr_TR" />
+  <meta property="og:title" content="Tanrikulu.dev — We make software you can feel." />
+  <meta property="og:description" content="Independent studio for mobile apps, websites and brand identities." />
+  <meta property="og:image" content="https://tanrikulu.dev/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Tanrikulu.dev — We make software you can feel." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Tanrikulu.dev — We make software you can feel." />
+  <meta name="twitter:description" content="Independent studio for mobile apps, websites and brand identities." />
+  <meta name="twitter:image" content="https://tanrikulu.dev/og.png" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-48.png" sizes="48x48" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://tanrikulu.dev/#studio",
+        "name": "Tanrikulu.dev",
+        "url": "https://tanrikulu.dev/",
+        "logo": "https://tanrikulu.dev/apple-touch-icon.png",
+        "image": "https://tanrikulu.dev/og.png",
+        "email": "hello@tanrikulu.dev",
+        "description": "Independent studio designing and building mobile apps, websites and brand identities.",
+        "knowsAbout": ["Mobile app development", "iOS", "Android", "React Native", "Flutter", "Swift", "Web design", "Next.js", "Brand identity", "Logo design", "UI/UX design"],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Services",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Mobile app development", "description": "iOS and Android apps with React Native, Flutter and Swift." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Website and web app development", "description": "Fast, search-friendly Next.js websites and web apps." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Brand identity design", "description": "Logos, typography, colour and design systems." } }
+          ]
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://tanrikulu.dev/#website",
+        "url": "https://tanrikulu.dev/",
+        "name": "Tanrikulu.dev",
+        "inLanguage": ["en", "tr"],
+        "publisher": { "@id": "https://tanrikulu.dev/#studio" }
+      }
+    ]
   }
-  html{ scroll-behavior: smooth; }
-  body{
-    background: var(--cream); color: var(--ink);
-    font-family: 'Hanken Grotesk', system-ui, sans-serif;
-    font-size: 18px; line-height: 1.55; font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden; cursor: none;
-  }
-  a{ color: inherit; text-decoration: none; }
-  button{ font: inherit; border: 0; background: none; color: inherit; cursor: none; }
-  .mono{ font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; }
-  .serif-it, .it{ font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 500; }
-
-  /* ---------- WEBGL CANVAS ---------- */
-  #bg-canvas{ position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
-
-  /* ---------- ATMOSPHERE ---------- */
-  .grain{
-    position: fixed; inset: -50%; z-index: 2; pointer-events: none; opacity: 0.035; mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    animation: grain 0.7s steps(2) infinite;
-  }
-  @keyframes grain{ to{ transform: translate(8%, 4%); } }
-
-  /* ---------- CURSOR (instant, no drag) ---------- */
-  .cursor{
-    position: fixed; top: 0; left: 0; width: 12px; height: 12px; z-index: 9999;
-    border-radius: 50%; background: var(--terracotta); pointer-events: none;
-    transform: translate(-50%,-50%); mix-blend-mode: multiply;
-    transition: width .25s ease, height .25s ease, background .25s ease, opacity .25s ease;
-  }
-  .cursor.hover{ width: 46px; height: 46px; background: rgba(188,94,56,0.22); }
-
-  /* ---------- LAYOUT ---------- */
-  .stage{ position: relative; z-index: 3; }
-  section{ position: relative; padding: 9vh 6vw; }
-  .reveal{ opacity: 0; }
-  .reveal.in{ animation: revealIn 1s cubic-bezier(.2,.7,.2,1) both; }
-  @keyframes revealIn{
-    from{ opacity: 0; transform: translateY(34px); filter: blur(7px); }
-    to{ opacity: 1; transform: none; filter: none; }
-  }
-
-  /* ---------- GLASS ---------- */
-  .glass{
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
-    border: 1px solid var(--glass-brd);
-    border-radius: 24px;
-    box-shadow: 0 24px 60px rgba(90,60,40,0.14), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(120,90,60,0.08);
-    position: relative; overflow: hidden;
-  }
-  .glass::after{
-    content:""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    background: radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,0.35), transparent 55%);
-  }
-  .glass-strong{ background: linear-gradient(135deg, rgba(255,253,248,0.72), rgba(255,250,242,0.5)); }
-
-  /* ---------- NAV ---------- */
-  nav.top{ position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 20px 6vw; }
-  .nav-inner{ width: 100%; display: flex; justify-content: space-between; align-items: center; }
-  .brand{ display: flex; align-items: center; gap: 13px; }
-  .brand-logo{ width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0; transition: transform .5s cubic-bezier(.5,0,.2,1); box-shadow: 0 6px 18px rgba(90,60,40,0.18); }
-  .brand:hover .brand-logo{ transform: scale(1.07); }
-  .brand-wm{ display: flex; align-items: baseline; gap: 1px; font-weight: 600; font-size: 17px; letter-spacing: 0.01em; }
-  .brand-wm .d{ font-family:'Cormorant Garamond', serif; font-style: italic; color: var(--terracotta); font-size: 21px; padding: 0 1px; }
-  .brand-wm .tld{ font-size: 13px; font-weight: 600; letter-spacing: 0.06em; }
-  .nav-links{ display: flex; gap: 6px; align-items: center; }
-  .nav-pill{ padding: 10px 18px; border-radius: 100px; font-size: 14px; font-weight: 500; white-space: nowrap; transition: background .3s ease, color .3s ease; }
-  .nav-pill:hover{ background: rgba(120,95,70,0.10); }
-  .nav-cta{ background: var(--terracotta); color: #FBF4E9; font-weight: 600; }
-  .nav-cta:hover{ background: var(--ink); }
-
-  /* ---------- HERO ---------- */
-  .hero{ min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: clamp(140px, 18vh, 200px); padding-bottom: 8vh; }
-  .hero-eyebrow{ display: inline-flex; align-items: center; gap: 12px; padding: 10px 20px; border-radius: 100px; align-self: flex-start; margin-bottom: 34px; white-space: nowrap; }
-  .hero-eyebrow .live{ width: 7px; height: 7px; border-radius: 50%; background: var(--sage); box-shadow: 0 0 10px var(--sage); animation: blink 2s ease-in-out infinite; }
-  @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.35} }
-  .hero h1{
-    font-family: 'Cormorant Garamond', serif; font-weight: 500;
-    font-size: clamp(54px, 10vw, 168px); line-height: 0.98; letter-spacing: -0.005em;
-    max-width: 15ch; text-wrap: balance;
-  }
-  .hero h1 .it{ font-weight: 500; }
-  .hero h1 .grad{
-    background: linear-gradient(100deg, var(--terracotta), var(--plum) 55%, var(--ochre));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .hero h1 .accent{ color: var(--terracotta); }
-  .hero-bottom{ display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: end; margin-top: 44px; }
-  .hero-lede{ max-width: 460px; color: var(--ink-soft); font-size: clamp(15px,1.3vw,18px); }
-  .hero-actions{ display: flex; gap: 14px; flex-wrap: wrap; justify-self: end; }
-  .btn{ display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; border-radius: 100px; font-weight: 600; font-size: 15px; transition: transform .3s ease, background .3s ease, color .3s ease, box-shadow .3s ease; }
-  .btn .arr{ transition: transform .3s ease; }
-  .btn:hover .arr{ transform: translateX(5px); }
-  .btn-primary{ background: var(--terracotta); color: #FBF4E9; box-shadow: 0 12px 28px rgba(188,94,56,0.28); }
-  .btn-primary:hover{ background: var(--ink); transform: translateY(-2px); }
-  .btn-glass{ border: 1px solid var(--glass-brd); backdrop-filter: blur(10px); color: var(--ink); }
-  .btn-glass:hover{ background: rgba(255,255,255,0.4); }
-
-  /* floating cards in hero */
-  .holo-field{ position: absolute; inset: 0; z-index: -1; pointer-events: none; }
-  .holo{ position: absolute; padding: 18px 22px; border-radius: 18px; white-space: nowrap; }
-  .holo .mono{ color: var(--ink-faint); margin-bottom: 8px; }
-  .holo .val{ font-family:'Cormorant Garamond', serif; font-size: 25px; font-weight: 600; letter-spacing: 0; line-height: 1.1; }
-  .holo .val .it{ color: var(--terracotta); }
-  .holo-1{ top: 19%; right: 7vw; }
-  .holo-2{ top: 52%; right: 17vw; }
-  .holo-3{ bottom: 13%; right: 5vw; }
-  .float-a{ animation: floatA 9s ease-in-out infinite; }
-  .float-b{ animation: floatB 11s ease-in-out infinite; }
-  .float-c{ animation: floatC 13s ease-in-out infinite; }
-  @keyframes floatA{ 0%,100%{ transform: translateY(0) rotate(-2deg); } 50%{ transform: translateY(-20px) rotate(1deg); } }
-  @keyframes floatB{ 0%,100%{ transform: translateY(0) rotate(2deg); } 50%{ transform: translateY(24px) rotate(-1.5deg); } }
-  @keyframes floatC{ 0%,100%{ transform: translateY(0) rotate(-1deg); } 50%{ transform: translateY(-16px) rotate(2deg); } }
-
-  /* ---------- SECTION HEAD ---------- */
-  .sec-tag{ display: inline-flex; align-items: center; gap: 10px; color: var(--ink-soft); margin-bottom: 22px; }
-  .sec-tag .dot{ width: 6px; height: 6px; border-radius: 50%; background: var(--terracotta); }
-  .sec-title{ font-family:'Cormorant Garamond', serif; font-size: clamp(44px, 7vw, 104px); line-height: 1.0; letter-spacing: -0.005em; font-weight: 500; max-width: 18ch; text-wrap: balance; }
-  .sec-title .it{ font-weight: 500; }
-  .sec-title .grad{ background: linear-gradient(100deg, var(--terracotta), var(--plum)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .sec-intro{ max-width: 520px; color: var(--ink-soft); margin-top: 22px; font-size: 17px; }
-
-  /* ---------- SERVICES ---------- */
-  .svc-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 52px; }
-  .svc{ padding: 34px 30px 30px; min-height: 420px; display: flex; flex-direction: column; transition: transform .5s cubic-bezier(.2,.7,.2,1); will-change: transform; }
-  .svc:hover{ transform: translateY(-10px); }
-  .svc .idx{ font-family:'Hanken Grotesk',sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--ink-faint); }
-  .svc .orb{ width: 72px; height: 72px; border-radius: 20px; margin: 26px 0 24px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-brd); background: rgba(255,255,255,0.30); transition: transform .5s cubic-bezier(.2,.7,.2,1), background .4s ease; }
-  .svc .orb svg{ width: 34px; height: 34px; }
-  .svc .orb svg [stroke]{ transition: stroke .4s ease; }
-  .svc:hover .orb{ transform: translateY(-2px) rotate(-3deg); }
-  .svc-1 .orb{ color: var(--terracotta); background: rgba(188,94,56,0.08); }
-  .svc-2 .orb{ color: var(--sage); background: rgba(142,156,114,0.10); }
-  .svc-3 .orb{ color: var(--plum); background: rgba(126,86,106,0.09); }
-  .svc h3{ font-family:'Cormorant Garamond', serif; font-size: 38px; line-height: 0.98; letter-spacing: 0; font-weight: 600; }
-  .svc h3 .it{ font-weight: 500; color: var(--terracotta); }
-  .svc p{ color: var(--ink-soft); font-size: 15px; margin-top: 12px; flex: 1; }
-  .svc .tags{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-  .svc .tags span{ font-size: 11px; font-weight: 500; letter-spacing: 0.04em; padding: 6px 13px; border-radius: 100px; border: 1px solid var(--glass-brd); color: var(--ink-soft); }
-
-  /* ---------- APPROACH ---------- */
-  .approach-body{ display: grid; grid-template-columns: 1fr 1fr; gap: 52px; margin-top: 48px; align-items: start; }
-  .approach-text p{ color: var(--ink-soft); font-size: 18px; max-width: 520px; }
-  .approach-text p + p{ margin-top: 20px; }
-  .approach-text .it{ color: var(--terracotta); font-size: 1.08em; }
-  .approach-text strong{ color: var(--ink); font-weight: 600; }
-  .pillars{ display: flex; flex-direction: column; gap: 12px; }
-  .pillar{ display: grid; grid-template-columns: auto 1fr auto; gap: 18px; align-items: center; padding: 20px 24px; border-radius: 16px; transition: transform .4s ease, background .4s ease; }
-  .pillar:hover{ transform: translateX(8px); }
-  .pillar .pnum{ font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink-faint); }
-  .pillar .plbl{ font-family:'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; }
-  .pillar .plbl .it{ color: var(--terracotta); font-weight: 500; }
-  .pillar .parr{ color: var(--ink-faint); transition: transform .3s ease, color .3s ease; }
-  .pillar:hover .parr{ transform: translateX(6px); color: var(--terracotta); }
-
-  .stats{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
-  .stat{ padding: 28px 24px; border-radius: 18px; }
-  .stat .num{ font-family:'Cormorant Garamond', serif; font-size: clamp(50px, 5.5vw, 82px); line-height: 1; letter-spacing: 0; font-weight: 600; }
-  .stat .num .it{ color: var(--terracotta); font-weight: 500; }
-  .stat .lbl{ color: var(--ink-soft); font-size: 14px; margin-top: 12px; }
-
-  /* ---------- CONTACT ---------- */
-  .contact{ display: flex; justify-content: center; }
-  .contact-card{ width: 100%; max-width: 980px; padding: 60px 56px; text-align: center; }
-  .contact-card h2{ font-family:'Cormorant Garamond', serif; font-size: clamp(48px, 7vw, 116px); line-height: 1.0; letter-spacing: -0.005em; font-weight: 500; }
-  .contact-card h2 .it{ font-weight: 500; }
-  .contact-card h2 .grad{ background: linear-gradient(100deg, var(--terracotta), var(--plum) 60%, var(--ochre)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .contact-card p{ color: var(--ink-soft); max-width: 520px; margin: 24px auto 36px; }
-  .contact-actions{ display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-  .trust-row{ display: flex; gap: 40px; justify-content: center; margin-top: 44px; padding-top: 30px; border-top: 1px solid var(--glass-brd); flex-wrap: wrap; }
-  .trust-row .t .k{ font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink-faint); }
-  .trust-row .t .v{ font-family:'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-top: 4px; }
-
-  /* ---------- FOOTER ---------- */
-  footer{ position: relative; z-index: 3; padding: 7vh 6vw 36px; }
-  .foot-cols{ display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; padding-top: 8px; }
-  .foot-brand{ display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .foot-brand .brand-logo{ width: 36px; height: 36px; }
-  .foot-brand .nm{ font-family:'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; }
-  .foot-brand .nm .it{ color: var(--terracotta); }
-  .foot-cols h5{ font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px; }
-  .foot-cols ul{ list-style: none; display: flex; flex-direction: column; gap: 9px; }
-  .foot-cols a{ font-size: 15px; color: var(--ink-soft); transition: color .25s ease; }
-  .foot-cols a:hover{ color: var(--terracotta); }
-  .foot-cols p{ color: var(--ink-soft); font-size: 14px; max-width: 320px; }
-  .foot-bot{ display: flex; justify-content: space-between; margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--glass-brd); color: var(--ink-faint); font-size: 12px; flex-wrap: wrap; gap: 12px; }
-
-  /* ---------- SCROLL HINT ---------- */
-  .scroll-hint{ position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 40; display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--ink-faint); transition: opacity .5s ease; }
-  .scroll-hint .bar{ width: 1px; height: 38px; background: linear-gradient(var(--terracotta), transparent); }
-
-  /* ---------- MODAL ---------- */
-  .modal-backdrop{ position: fixed; inset: 0; z-index: 1000; background: rgba(48,38,30,0.42); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
-  .modal-backdrop.open{ opacity: 1; pointer-events: auto; }
-  .modal{ width: 100%; max-width: 680px; max-height: 92vh; overflow: auto; padding: 42px; border-radius: 28px; transform: translateY(20px) scale(.98); transition: transform .5s cubic-bezier(.5,0,.2,1); }
-  .modal-backdrop.open .modal{ transform: none; }
-  .modal-head{ display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start; padding-bottom: 22px; margin-bottom: 26px; border-bottom: 1px solid var(--glass-brd); }
-  .modal-head .eyebrow{ font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px; }
-  .modal-head h3{ font-family:'Cormorant Garamond', serif; font-size: 42px; line-height: 1.0; font-weight: 600; }
-  .modal-head h3 .it{ color: var(--terracotta); font-weight: 500; }
-  .modal-head p{ margin-top: 8px; font-size: 14px; color: var(--ink-soft); max-width: 420px; }
-  .modal-close{ width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--glass-brd); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ink); transition: background .25s ease, color .25s ease, transform .4s ease; }
-  .modal-close:hover{ background: var(--ink); color: var(--cream); transform: rotate(90deg); }
-  .field + .field{ margin-top: 22px; }
-  .field-label{ font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 12px; display: flex; justify-content: space-between; }
-  .field-label .req{ color: var(--terracotta); }
-  .service-options{ display: flex; flex-direction: column; gap: 9px; }
-  .service-opt{ display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 15px 20px; border: 1px solid var(--glass-brd); border-radius: 100px; transition: background .25s ease, color .25s ease, transform .25s ease; position: relative; }
-  .service-opt input{ position: absolute; opacity: 0; pointer-events: none; }
-  .service-opt .radio{ width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--ink-soft); position: relative; flex-shrink: 0; }
-  .service-opt .radio::after{ content:""; position: absolute; inset: 3px; border-radius: 50%; background: var(--terracotta); transform: scale(0); transition: transform .25s ease; }
-  .service-opt input:checked ~ .radio::after{ transform: scale(1); }
-  .service-opt:has(input:checked){ background: var(--terracotta); color: #FBF4E9; border-color: var(--terracotta); }
-  .service-opt:has(input:checked) .radio{ border-color: #FBF4E9; }
-  .service-opt:has(input:checked) .radio::after{ background: #FBF4E9; }
-  .service-opt:has(input:checked) .meta{ color: rgba(251,244,233,0.7); }
-  .service-opt:hover{ transform: translateX(4px); }
-  .service-opt .label{ font-size: 16px; font-weight: 500; }
-  .service-opt .meta{ font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-faint); }
-  .modal-input, .modal-textarea{ width: 100%; background: rgba(255,255,255,0.35); border: 1px solid var(--glass-brd); border-radius: 14px; padding: 15px 18px; color: var(--ink); font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; line-height: 1.5; resize: none; transition: border-color .25s ease, background .25s ease; }
-  .modal-input:focus, .modal-textarea:focus{ outline: none; border-color: var(--terracotta); background: rgba(255,255,255,0.6); }
-  .modal-input::placeholder, .modal-textarea::placeholder{ color: var(--ink-faint); }
-  .modal-textarea{ min-height: 120px; }
-  .input-row{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .modal-foot{ display: flex; justify-content: space-between; align-items: center; padding-top: 22px; margin-top: 28px; border-top: 1px solid var(--glass-brd); gap: 16px; }
-  .modal-foot .step{ font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-faint); }
-  .modal-actions{ display: flex; gap: 10px; }
-  .btn-modal{ padding: 14px 24px; border-radius: 100px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 9px; transition: background .25s ease, color .25s ease, transform .25s ease; }
-  .btn-cancel{ border: 1px solid var(--glass-brd); color: var(--ink); }
-  .btn-cancel:hover{ background: var(--ink); color: var(--cream); }
-  .btn-send{ background: var(--terracotta); color: #FBF4E9; }
-  .btn-send:hover{ background: var(--ink); transform: translateX(3px); }
-  body.modal-open{ overflow: hidden; }
-
-  @media (max-width: 900px){
-    body{ cursor: auto; }
-    .cursor{ display: none; }
-    .nav-links .nav-pill:not(.nav-cta){ display: none; }
-    .hero-bottom{ grid-template-columns: 1fr; gap: 28px; }
-    .hero-actions{ justify-self: start; }
-    .holo-field{ display: none; }
-    .svc-grid{ grid-template-columns: 1fr; }
-    .approach-body{ grid-template-columns: 1fr; gap: 34px; }
-    .stats{ grid-template-columns: 1fr 1fr; }
-    .foot-cols{ grid-template-columns: 1fr 1fr; }
-    .contact-card{ padding: 42px 26px; }
-    section{ padding: 8vh 6vw; }
-    .input-row{ grid-template-columns: 1fr; }
-    .modal{ padding: 30px 24px; }
-    .modal-head h3{ font-size: 34px; }
-    .modal-foot{ flex-direction: column; align-items: stretch; }
-    .modal-actions{ justify-content: flex-end; }
-  }
-</style>
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&family=Caveat:wght@500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
+<h1 class="sr-only">Tanrikulu.dev — an independent studio for mobile apps, websites and brand identity. We make software you can feel.</h1>
+<noscript><div class="noscript">tanrikulu.dev — mobile, web &amp; brand studio.<br />Write to hello@tanrikulu.dev</div></noscript>
+<div id="viewport" role="main" aria-label="tanrikulu.dev studio board">
+  <div id="world">
+    <svg class="arrows" width="10" height="10" id="arrows"></svg>
 
-<canvas id="bg-canvas"></canvas>
-<div class="grain"></div>
-<div class="cursor" id="cursor"></div>
-
-<nav class="top">
-  <div class="nav-inner">
-    <a class="brand" href="#top" aria-label="Tanrikulu.dev — home">
-      <svg class="brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="100" height="100" rx="14" fill="#3A322B"/>
-        <rect x="10" y="18" width="36" height="10" rx="4" fill="#BC5E38"/>
-        <rect x="23" y="22" width="10" height="30" rx="4" fill="#BC5E38"/>
-        <rect x="54" y="18" width="10" height="34" rx="4" fill="#BC5E38"/>
-        <path d="M64 34 L86 18" stroke="#BC5E38" stroke-width="10" stroke-linecap="round"/>
-        <path d="M64 34 L86 50" stroke="#BC5E38" stroke-width="10" stroke-linecap="round"/>
-        <path d="M10 54 L10 86 L24 86 C32 86 38 80 38 70 C38 60 32 54 24 54 Z" fill="#BC5E38"/>
-        <rect x="18" y="62" width="12" height="16" rx="3" fill="#3A322B"/>
-        <rect x="44" y="54" width="22" height="8" rx="3" fill="#BC5E38"/>
-        <rect x="44" y="54" width="8" height="32" rx="3" fill="#BC5E38"/>
-        <rect x="44" y="66" width="18" height="7" rx="3" fill="#BC5E38"/>
-        <rect x="44" y="78" width="22" height="8" rx="3" fill="#BC5E38"/>
-        <path d="M70 54 L80 86 L90 54" stroke="#BC5E38" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      </svg>
-      <span class="brand-wm"><span>tanrikulu</span><span class="d">.</span><span class="tld">DEV</span></span>
-    </a>
-    <div class="nav-links">
-      <a href="#work" class="nav-pill">Work</a>
-      <a href="#approach" class="nav-pill">Approach</a>
-      <a href="#studio" class="nav-pill">Studio</a>
-      <button type="button" class="nav-pill nav-cta" data-open-modal>Start a project</button>
-    </div>
-  </div>
-</nav>
-
-<div class="stage" id="top">
-
-  <!-- ========== HERO ========== -->
-  <section class="hero" data-parallax-scene>
-    <div class="hero-eyebrow glass">
-      <span class="live"></span>
-      <span class="mono">Design Atelier · Open for projects</span>
+    <div class="frame" id="f-hero" data-name="Hero" style="left:0; top:0; width:1440px; height:900px">
+      <span class="frame__label">◇ 01 · tanrikulu.dev / home</span>
+      <div class="frame__body"><div class="hero hs" id="hstage">
+        <div class="top"><span>tanrikulu.dev</span><span>mobile · web · brand</span><span>booking Q1 2027</span></div>
+        <i class="hguide" id="hguide"></i>
+        <div class="ho hw" id="w1">We make</div>
+        <div class="ho hw" id="w2">software you</div>
+        <div class="ho hw" id="w3">can</div>
+        <div class="ho hw it" id="w4">feel.</div>
+        <p class="ho hp" id="hp"><span id="hptext"></span><i class="caret"></i></p>
+        <span class="ho pill" id="hpill" data-go="f-contact">Start a project →</span>
+        <div class="ho hbadge" id="hbadge" aria-label="Available for projects, booking Q1 2027"><div class="fl-h"><span><i></i>studio status</span><span>live</span></div><div class="fl-row" id="flap"></div></div>
+        <div class="ho hicon" id="hicon"><span>t<i>.</i></span></div>
+        <div class="ho hcom" id="hcom"><span id="hcomav" style="background:#2E5BFF">M</span><p><small id="hcomby">motion</small><b id="hcomtx">can we make it bolder? 👀</b><em>✓ resolved</em></p></div>
+        <div class="ho hstamp" id="hstamp"><b>Approved ✓</b><small>by Aden · client</small></div>
+        <div class="ho hsw" id="hsw"><i style="background:#141414"></i><i style="background:#FFD84A"></i><i style="background:#FF3D7F"></i><i style="background:#2E5BFF"></i></div>
+        <div class="hsel" id="hs1" style="--c:#FF3D7F"><i></i><i></i><i></i><i></i><em></em></div><div class="hsel" id="hs2" style="--c:#00B37A"><i></i><i></i><i></i><i></i><em></em></div><div class="hsel" id="hs3" style="--c:#2E5BFF"><i></i><i></i><i></i><i></i><em></em></div>
+        <div class="hcur" id="hc1" style="--c:#FF3D7F"><svg width="22" height="26" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#FF3D7F" stroke="#fff" stroke-width="1.4"/></svg><span>art direction</span></div><div class="hcur" id="hc2" style="--c:#00B37A"><svg width="22" height="26" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#00B37A" stroke="#fff" stroke-width="1.4"/></svg><span>frontend</span></div><div class="hcur" id="hc3" style="--c:#2E5BFF"><svg width="22" height="26" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#2E5BFF" stroke="#fff" stroke-width="1.4"/></svg><span>motion</span></div><div class="hcur" id="hc4" style="--c:#FF8A3D"><svg width="22" height="26" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#FF8A3D" stroke="#fff" stroke-width="1.4"/></svg><span>Aden · client</span></div>
+      </div></div>
+      <div class="handles"><i></i><i></i><i></i><i></i></div><span class="size">1440 × 900</span>
     </div>
 
-    <h1 class="reveal">
-      Building <span class="it grad">tomorrow's</span> <span class="accent">digital</span> worlds<span class="accent">.</span>
-    </h1>
-
-    <div class="hero-bottom">
-      <p class="hero-lede reveal">
-        We craft exceptional digital experiences using cutting-edge technologies and stunning design — immersive worlds that help your business feel genuinely <em class="serif-it">unique</em>.
-      </p>
-      <div class="hero-actions reveal">
-        <button type="button" class="btn btn-primary" data-open-modal>Start a project <span class="arr">→</span></button>
-        <a href="#studio" class="btn btn-glass">Who we are</a>
-      </div>
+    <div class="frame" id="f-svc" data-name="Services" style="left:1640px; top:0; width:1200px; height:560px">
+      <span class="frame__label">◇ 02 · services</span>
+      <div class="frame__body"><div class="svcs">
+        <div class="svc" id="svc1"><span class="n">01</span><div class="stage" style="--c:var(--mag)"><div class="scene">
+          <div class="ph"><i class="bar"></i><i class="crd"></i><i class="slot"></i></div>
+          <span class="plab">components</span>
+          <span class="chip c1">Card</span><span class="chip c2 drag">Pay →</span><span class="chip c3">Tabs</span>
+          <div class="scur cur-m"><svg width="14" height="17" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#141414" stroke="#fff" stroke-width="1.6"/></svg><span style="background:#141414">design</span></div>
+        </div><pre class="code" data-code="&lt;Screen&gt;|  &lt;Card total={182} /&gt;|  &lt;PayButton onPress={pay} /&gt;|&lt;/Screen&gt;"></pre></div><h3>Mobile<br />apps</h3><p>iOS &amp; Android. React Native, Flutter, Swift. Fast cold starts, smooth everything.</p></div>
+        <div class="svc" id="svc2"><span class="n">02</span><div class="stage" style="--c:var(--sel)"><div class="scene">
+          <div class="br"><i class="dots"></i><i class="hb"><em>Hero · 176×48</em></i><i class="l1"></i><i class="l2"></i></div>
+          <div class="score"><b id="score">0</b><small>perf</small></div>
+          <div class="scur cur-w"><svg width="14" height="17" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#141414" stroke="#fff" stroke-width="1.6"/></svg><span style="background:#141414">dev</span></div>
+        </div><pre class="code" data-code="export default function Page() {|  return &lt;Hero cta=&quot;Start&quot; /&gt;|}|// lighthouse: 100 · 100 · 100"></pre></div><h3>Web<br />products</h3><p>Next.js sites and web apps that score 100 and convert.</p></div>
+        <div class="svc" id="svc3"><span class="n">03</span><div class="stage" style="--c:var(--grn)"><div class="scene">
+          <svg class="pen" viewBox="0 0 200 150" width="200" height="150"><path class="stroke" d="M30 38 H140 M85 38 C85 80 80 112 120 118"/><circle class="fill" cx="146" cy="116" r="11"/>
+            <rect class="anc" x="26" y="34" width="8" height="8"/><rect class="anc" x="136" y="34" width="8" height="8"/><rect class="anc" x="116" y="114" width="8" height="8"/></svg>
+          <div class="sw"><i style="background:#141414"></i><i style="background:#FFD84A"></i><i style="background:#fff"></i><b class="pick"></b></div>
+          <div class="scur cur-b"><svg width="14" height="17" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#141414" stroke="#fff" stroke-width="1.6"/></svg><span style="background:#141414">brand</span></div>
+        </div><pre class="code" data-code="--brand: #00B37A;|--accent: #FFD84A;|--radius: 14px;|font: 800 Schibsted Grotesk;"></pre></div><h3>Brand<br />identity</h3><p>Logos, type, colour and systems that scale.</p></div>
+      </div></div>
+      <div class="handles"><i></i><i></i><i></i><i></i></div><span class="size">1200 × 560</span>
     </div>
 
-    <div class="holo-field">
-      <div class="holo holo-1 glass float-a"><div class="mono">Discipline</div><div class="val">Mobile <span class="it">+</span> Web</div></div>
-      <div class="holo holo-2 glass float-b"><div class="mono">Aesthetic</div><div class="val">Painterly <span class="it">depth</span></div></div>
-      <div class="holo holo-3 glass float-c"><div class="mono">Index</div><div class="val">Vol.<span class="it">4</span> — MMXXVI</div></div>
-    </div>
-  </section>
-
-  <!-- ========== SERVICES ========== -->
-  <section id="work" data-parallax-scene>
-    <div class="sec-tag mono reveal"><span class="dot"></span> 01 — Practice</div>
-    <h2 class="sec-title reveal">What we <span class="it grad">create</span>.</h2>
-    <p class="sec-intro reveal">Three disciplines, one studio. Our expertise spans the full surface area of your digital presence — software, web, and brand.</p>
-
-    <div class="svc-grid">
-      <article class="svc glass svc-1 reveal">
-        <div class="idx">[ 01 ]</div>
-        <div class="orb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="7" y="2" width="10" height="20" rx="2.5"/>
-            <path d="M11 18.5h2"/>
-          </svg>
-        </div>
-        <h3>Mobile<br>Applications</h3>
-        <p>Native and cross-platform mobile apps built with highly performant technologies to deliver seamless experiences across every device.</p>
-        <div class="tags"><span>iOS &amp; Android</span><span>React Native</span><span>Flutter</span><span>Performance</span></div>
-      </article>
-
-      <article class="svc glass svc-2 reveal">
-        <div class="idx">[ 02 ]</div>
-        <div class="orb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2.5" y="4" width="19" height="15" rx="2.5"/>
-            <path d="M2.5 8h19"/>
-            <path d="M5.5 6.1h.01M7.7 6.1h.01M9.9 6.1h.01"/>
-            <path d="M9 15l-2-2.5L9 10"/>
-            <path d="M14 15l2-2.5L14 10"/>
-          </svg>
-        </div>
-        <h3>Web<br>Development</h3>
-        <p>Modern, responsive, fast-loading sites built with the latest frameworks — engineered for the best digital experience your users will have today.</p>
-        <div class="tags"><span>React · Next.js</span><span>Backend</span><span>SEO</span><span>Clean UI/UX</span></div>
-      </article>
-
-      <article class="svc glass svc-3 reveal">
-        <div class="idx">[ 03 ]</div>
-        <div class="orb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M15.5 4.5l4 4L9 19l-4.5.5L5 15z"/>
-            <path d="M13.5 6.5l4 4"/>
-            <path d="M5 15l3.5 3.5"/>
-          </svg>
-        </div>
-        <h3>Graphic<br><span class="it">Design</span></h3>
-        <p>Visually stunning, impactful design that represents your brand and values accurately while drawing in the right kind of customer.</p>
-        <div class="tags"><span>Brand Identity</span><span>Logo</span><span>Custom Graphics</span><span>Design Systems</span></div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ========== APPROACH ========== -->
-  <section id="approach" data-parallax-scene>
-    <div class="sec-tag mono reveal"><span class="dot"></span> 02 — Approach</div>
-    <h2 class="sec-title reveal">Transforming ideas into digital <span class="it grad">excellence</span>.</h2>
-
-    <div class="approach-body">
-      <div class="approach-text reveal">
-        <p>At <strong>Tanrikulu.dev</strong>, we are committed to turning your visions into reality through our passion for excellence and innovation. With years of experience and a results-oriented approach, we craft tailored solutions to empower your digital presence.</p>
-        <p>Our specialised team works in direct collaboration with our clients to ensure every project is built on a foundation of trust, quality, and a user experience that delivers <em class="it">lasting value</em>.</p>
-      </div>
-      <div class="pillars">
-        <div class="pillar glass reveal"><span class="pnum">A.01</span><span class="plbl">Passion for <span class="it">digital</span> excellence</span><span class="parr">→</span></div>
-        <div class="pillar glass reveal"><span class="pnum">A.02</span><span class="plbl">User-centric <span class="it">design</span></span><span class="parr">→</span></div>
-        <div class="pillar glass reveal"><span class="pnum">A.03</span><span class="plbl">Light, fast <span class="it">performance</span></span><span class="parr">→</span></div>
-        <div class="pillar glass reveal"><span class="pnum">A.04</span><span class="plbl">Creative, clean <span class="it">delivery</span></span><span class="parr">→</span></div>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stat glass reveal"><div class="num">100<span class="it">%</span></div><div class="lbl">Projects shipped on schedule.</div></div>
-      <div class="stat glass reveal"><div class="num">24/7</div><div class="lbl">Support on every engagement.</div></div>
-      <div class="stat glass reveal"><div class="num">12<span class="it">+</span></div><div class="lbl">Frameworks in our toolkit.</div></div>
-      <div class="stat glass reveal"><div class="num">∞</div><div class="lbl">Detail in pursuit of craft.</div></div>
-    </div>
-  </section>
-
-  <!-- ========== CONTACT ========== -->
-  <section id="contact" class="contact" data-parallax-scene>
-    <div class="contact-card glass glass-strong reveal">
-      <div class="sec-tag mono" style="justify-content:center;"><span class="dot"></span> 03 — Next step</div>
-      <h2>Let's build something <span class="it grad">amazing</span>.</h2>
-      <p>Ready to start your next project? Tell us what you're working on and we'll come back within one business day with a plan, a timeline, and a number that won't make you flinch.</p>
-      <div class="contact-actions">
-        <button type="button" class="btn btn-primary" data-open-modal>Start a project <span class="arr">→</span></button>
-        <a href="#top" class="btn btn-glass">Back to top</a>
-      </div>
-      <div class="trust-row">
-        <div class="t"><div class="k">T.01</div><div class="v">Trust</div></div>
-        <div class="t"><div class="k">T.02</div><div class="v">Professional</div></div>
-        <div class="t"><div class="k">T.03</div><div class="v">Quality</div></div>
-      </div>
-    </div>
-  </section>
-
-</div>
-
-<!-- ========== FOOTER ========== -->
-<footer id="studio">
-  <div class="foot-cols">
-    <div>
-      <div class="foot-brand">
-        <svg class="brand-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect width="100" height="100" rx="14" fill="#3A322B"/>
-          <rect x="10" y="18" width="36" height="10" rx="4" fill="#BC5E38"/>
-          <rect x="23" y="22" width="10" height="30" rx="4" fill="#BC5E38"/>
-          <rect x="54" y="18" width="10" height="34" rx="4" fill="#BC5E38"/>
-          <path d="M64 34 L86 18" stroke="#BC5E38" stroke-width="10" stroke-linecap="round"/>
-          <path d="M64 34 L86 50" stroke="#BC5E38" stroke-width="10" stroke-linecap="round"/>
-          <path d="M10 54 L10 86 L24 86 C32 86 38 80 38 70 C38 60 32 54 24 54 Z" fill="#BC5E38"/>
-          <rect x="18" y="62" width="12" height="16" rx="3" fill="#3A322B"/>
-          <rect x="44" y="54" width="22" height="8" rx="3" fill="#BC5E38"/>
-          <rect x="44" y="54" width="8" height="32" rx="3" fill="#BC5E38"/>
-          <rect x="44" y="66" width="18" height="7" rx="3" fill="#BC5E38"/>
-          <rect x="44" y="78" width="22" height="8" rx="3" fill="#BC5E38"/>
-          <path d="M70 54 L80 86 L90 54" stroke="#BC5E38" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-        <span class="nm">Tanrikulu<span class="it">.dev</span></span>
-      </div>
-      <p>An independent atelier building tomorrow's digital solutions. Mobile, web, brand. Remote first, detail obsessed.</p>
-    </div>
-    <div>
-      <h5>Practice</h5>
-      <ul><li><a href="#work">Mobile Applications</a></li><li><a href="#work">Web Development</a></li><li><a href="#work">Graphic Design</a></li><li><a href="#work">Design Systems</a></li></ul>
-    </div>
-    <div>
-      <h5>Contact</h5>
-      <ul><li><a href="mailto:hello@tanrikulu.dev">hello@tanrikulu.dev</a></li><li><a href="#" data-open-modal>Book a call →</a></li><li><a href="#" data-open-modal>Brief us</a></li></ul>
-    </div>
-    <div>
-      <h5>Elsewhere</h5>
-      <ul><li><a href="#">Instagram</a></li><li><a href="#">Dribbble</a></li><li><a href="#">GitHub</a></li><li><a href="#">LinkedIn</a></li></ul>
-    </div>
-  </div>
-  <div class="foot-bot">
-    <span>© 2026 Tanrikulu.dev — All rights reserved.</span>
-    <span>A design atelier.</span>
-    <span>v 5.1 — Atelier</span>
-  </div>
-</footer>
-
-<div class="scroll-hint" id="scroll-hint">
-  <span class="mono">Scroll</span>
-  <span class="bar"></span>
-</div>
-
-<!-- ========== MODAL ========== -->
-<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
-  <div class="modal glass glass-strong" role="document">
-    <div class="modal-head">
-      <div>
-        <div class="eyebrow">M.01 — Project brief</div>
-        <h3 id="modal-title">Start your <span class="it">project</span>.</h3>
-        <p>Tell us what you're building and we'll get back within one business day with a plan, a timeline, and a number that won't make you flinch.</p>
-      </div>
-      <button class="modal-close" type="button" aria-label="Close" id="modal-close">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5 L19 19 M19 5 L5 19"/></svg>
-      </button>
-    </div>
-    <form id="brief-form">
-      <div class="field">
-        <div class="field-label"><span>Select service</span><span class="req">Required</span></div>
-        <div class="service-options">
-          <label class="service-opt">
-            <input type="radio" name="service" value="mobile" checked>
-            <span class="radio"></span>
-            <span class="label">Mobile Application</span>
-            <span class="meta">01</span>
-          </label>
-          <label class="service-opt">
-            <input type="radio" name="service" value="web">
-            <span class="radio"></span>
-            <span class="label">Web Development</span>
-            <span class="meta">02</span>
-          </label>
-          <label class="service-opt">
-            <input type="radio" name="service" value="design">
-            <span class="radio"></span>
-            <span class="label">Graphic Design</span>
-            <span class="meta">03</span>
-          </label>
-        </div>
-      </div>
-      <div class="field">
-        <div class="input-row">
-          <div>
-            <div class="field-label"><span>Your name</span></div>
-            <input class="modal-input" type="text" name="name" placeholder="Jane Doe" autocomplete="name">
+    <div class="frame" id="f-phone" data-name="App" style="left:1660px; top:720px; width:320px; height:660px">
+      <span class="frame__label">◇ 03 · app / home</span>
+      <div class="frame__body a-body"><div class="a-dev"><div class="a-scr">
+          <div class="a-status"><b>9:41</b><span class="a-island"></span><span class="a-sig"><i></i><i></i><i></i><i></i><em></em></span></div>
+          <div class="a-views" id="aviews">
+            <section class="a-v on">
+              <header class="a-head"><div><small>Good morning</small><h4>Hey Aden,</h4></div><span class="a-me">A</span></header>
+              <div class="a-bal"><small>Revenue · this week</small><b>₺<span class="a-count" data-to="184.2">184.2</span>k</b><span class="a-up">▲ 12.4%</span>
+                <svg class="a-spark" viewBox="0 0 240 50" preserveAspectRatio="none"><defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD84A" stop-opacity=".45"/><stop offset="1" stop-color="#FFD84A" stop-opacity="0"/></linearGradient></defs><path class="a-area" d="M0 40 C20 36 30 30 50 32 S80 18 100 22 S135 34 155 20 S195 6 215 10 L240 4 V50 H0Z" fill="url(#ag)"/><path class="a-line" d="M0 40 C20 36 30 30 50 32 S80 18 100 22 S135 34 155 20 S195 6 215 10 L240 4"/></svg></div>
+              <div class="a-acts"><span><i><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-3-7z"/></svg></i>Send</span><span><i><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5"/></svg></i>Invoice</span><span><i><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M4 12h16"/></svg></i>Scan</span><span><i><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></i>More</span></div>
+              <div class="a-sec"><b>Recent orders</b><small>See all</small></div>
+              <div class="a-row"><span class="a-av" style="background:#FF3D7F">EK</span><div><b>Elif K.</b><small>2 min ago</small></div><div class="a-r"><b>₺1,240</b><span class="a-st ok">Paid</span></div></div><div class="a-row"><span class="a-av" style="background:#2E5BFF">MB</span><div><b>Mert B.</b><small>14 min ago</small></div><div class="a-r"><b>₺860</b><span class="a-st sh">Shipped</span></div></div><div class="a-row"><span class="a-av" style="background:#00B37A">ZA</span><div><b>Zeynep A.</b><small>1 h ago</small></div><div class="a-r"><b>₺2,310</b><span class="a-st pe">Pending</span></div></div>
+            </section>
+            <section class="a-v">
+              <header class="a-head"><div><small>1,284 this month</small><h4>Orders</h4></div></header>
+              <div class="a-seg"><i class="a-segpill"></i><span>All</span><span>Pending</span><span>Done</span></div>
+              <div class="a-row a-new"><span class="a-av" style="background:#FFD84A">NO</span><div><b>New order #1285</b><small>just now</small></div><div class="a-r"><b>₺3,120</b><span class="a-st nw">New</span></div></div>
+              <div class="a-row"><span class="a-av" style="background:#FF3D7F">EK</span><div><b>Elif K.</b><small>2 min ago</small></div><div class="a-r"><b>₺1,240</b><span class="a-st ok">Paid</span></div></div><div class="a-row"><span class="a-av" style="background:#2E5BFF">MB</span><div><b>Mert B.</b><small>14 min ago</small></div><div class="a-r"><b>₺860</b><span class="a-st sh">Shipped</span></div></div><div class="a-row"><span class="a-av" style="background:#00B37A">ZA</span><div><b>Zeynep A.</b><small>1 h ago</small></div><div class="a-r"><b>₺2,310</b><span class="a-st pe">Pending</span></div></div><div class="a-row"><span class="a-av" style="background:#FF8A3D">CD</span><div><b>Can D.</b><small>3 h ago</small></div><div class="a-r"><b>₺540</b><span class="a-st ok">Paid</span></div></div><div class="a-row"><span class="a-av" style="background:#8B3DFF">SY</span><div><b>Selin Y.</b><small>Yesterday</small></div><div class="a-r"><b>₺1,975</b><span class="a-st sh">Shipped</span></div></div>
+            </section>
+            <section class="a-v">
+              <header class="a-head"><div><small>Last 7 days</small><h4>Analytics</h4></div></header>
+              <div class="a-kpi"><div><small>Visitors</small><b>12,480</b><span class="a-up dark">▲ 8.1%</span></div>
+                <div class="a-donut"><span>3.8%</span></div></div>
+              <div class="a-bars"><span style="--h:42%;--d:0ms"><i></i><em>M</em></span><span style="--h:64%;--d:70ms"><i></i><em>T</em></span><span style="--h:51%;--d:140ms"><i></i><em>W</em></span><span style="--h:78%;--d:210ms"><i></i><em>T</em></span><span style="--h:60%;--d:280ms"><i></i><em>F</em></span><span style="--h:96%;--d:350ms"><i></i><em>S</em></span><span style="--h:70%;--d:420ms"><i></i><em>S</em></span></div>
+              <div class="a-tiles"><div><small>Avg. order</small><b>₺143</b></div><div><small>Returning</small><b>38%</b></div></div>
+            </section>
+            <section class="a-v a-chatv">
+              <header class="a-head"><div><small>Online</small><h4>Selin Y.</h4></div><span class="a-me" style="background:#8B3DFF">S</span></header>
+              <div class="a-chat">
+                <p class="them" style="--d:.1s">Hi! Is the blue one back in stock? 💙</p>
+                <p class="me" style="--d:.7s">Yes — restocked this morning.</p>
+                <p class="me" style="--d:1.1s">Want me to hold one for you?</p>
+                <p class="them" style="--d:1.8s">Please! Ordering now 🙌</p>
+                <p class="them typing" style="--d:2.4s"><i></i><i></i><i></i></p>
+              </div>
+            </section>
           </div>
-          <div>
-            <div class="field-label"><span>Email</span><span class="req">Required</span></div>
-            <input class="modal-input" type="email" name="email" placeholder="you@company.com" autocomplete="email" required>
-          </div>
-        </div>
-      </div>
-      <div class="field">
-        <div class="field-label"><span>Project details</span><span class="req">Required</span></div>
-        <textarea class="modal-textarea" name="details" placeholder="Describe your project — goals, requirements, timeline, and anything else that helps us understand the scope…" required></textarea>
-      </div>
-      <div class="modal-foot">
-        <div class="step">Step 01 / 01 — Direct line to the atelier</div>
-        <div class="modal-actions">
-          <button type="button" class="btn-modal btn-cancel" id="modal-cancel">Cancel</button>
-          <button type="submit" class="btn-modal btn-send">Send request <span class="arr">→</span></button>
-        </div>
-      </div>
-    </form>
+          <nav class="a-tabs" id="atabs"><i class="a-ind"></i><i class="a-tap"></i>
+            <button class="on"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg><span>Home</span></button><button><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4zM3 7v10l9 4 9-4V7M12 11v10"/></svg><span>Orders</span></button><button><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Stats</span></button><button><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><span>Chat</span><em class="a-badge">2</em></button>
+          </nav>
+          <span class="a-homebar"></span>
+        </div></div></div>
+      <div class="handles"><i></i><i></i><i></i><i></i></div><span class="size">320 × 660</span>
+    </div>
+
+    <div class="frame" id="f-brand" data-name="Brand" style="left:2100px; top:720px; width:740px; height:480px">
+      <span class="frame__label">◇ 04 · brand explorations</span>
+      <div class="frame__body"><div class="brand">
+        <div class="tile morph"><div class="m"><span class="h"></span><span class="v"></span><span class="d"></span></div><span class="lab">monogram · motion</span></div>
+        <div class="tile wave"><div class="w"><span style="animation-delay:0ms">t</span><span style="animation-delay:120ms">a</span><span style="animation-delay:240ms">n</span><span style="animation-delay:360ms">r</span><span style="animation-delay:480ms">i</span><span style="animation-delay:600ms">k</span><span style="animation-delay:720ms">u</span><span style="animation-delay:840ms">l</span><span style="animation-delay:960ms">u</span></div><span class="lab">wordmark · variable weight</span></div>
+        <div class="tile icon"><div class="ic"><span>t<i>.</i></span></div><span class="lab" style="color:#fff">app icon</span></div>
+        <div class="tile kin"><div class="row"><span>Tanrikulu.dev — Tanrikulu.dev — Tanrikulu.dev — Tanrikulu.dev — </span></div><div class="row"><span>mobile web brand mobile web brand mobile web brand mobile web brand </span></div><div class="row"><span>Tanrikulu.dev — Tanrikulu.dev — Tanrikulu.dev — Tanrikulu.dev — </span></div><span class="lab">type · kinetic</span></div>
+        <div class="tile pix"><div class="g"><b class="on" style="--i:0"></b><b class="on" style="--i:1"></b><b class="on" style="--i:2"></b><b class="on" style="--i:3"></b><b class="on" style="--i:4"></b><b></b><b></b><b class="on" style="--i:7"></b><b></b><b></b><b></b><b></b><b class="on" style="--i:12"></b><b></b><b></b><b></b><b></b><b class="on" style="--i:17"></b><b></b><b></b><b></b><b></b><b class="on" style="--i:22"></b><b></b><b></b></div><span class="lab">pixel system</span></div>
+        <div class="tile orbit"><div class="o">T<span class="ring"></span></div><span class="lab" style="color:#fff">mark · orbit</span></div>
+      </div></div>
+      <div class="handles"><i></i><i></i><i></i><i></i></div><span class="size">740 × 480</span>
+    </div>
+
+    <div id="g-process" style="position:absolute; left:1640px; top:1460px; width:1200px; height:400px"></div>
+    <div class="note pnote" style="left:1660px; top:1460px">how a project runs ↓</div>
+    <div class="sticky st1" style="left:1680px; top:1550px; background:var(--yel); --r:-3deg"><small>step 01</small>Discover. One call, a plan &amp; a fixed quote.</div>
+    <div class="sticky st2" style="left:1990px; top:1580px; background:#A6E3FF; --r:2deg"><small>step 02</small>Design real screens, not decks.</div>
+    <div class="sticky st3" style="left:2300px; top:1540px; background:#FFB3CF; --r:-1.5deg"><small>step 03</small>Build with a preview link for every change.</div>
+    <div class="sticky st4" style="left:2610px; top:1585px; background:#B7F5D2; --r:3deg"><small>step 04</small>Launch &amp; stick around.</div>
+    <div class="note" style="left:2010px; top:1250px; color:var(--sel)">← real app we'd ship</div>
+
+    <div class="frame" id="f-contact" data-name="Contact" style="left:1920px; top:1990px; width:640px; height:560px">
+      <span class="frame__label">◇ 06 · contact</span>
+      <div class="frame__body"><form class="contact" id="brief" novalidate>
+        <h2>Leave a note on the board.</h2>
+        <input name="name" autocomplete="name" placeholder="Your name" aria-label="Your name" required />
+        <input name="email" type="email" autocomplete="email" placeholder="Email" aria-label="Email" required />
+        <textarea name="details" rows="3" placeholder="What are we building?" aria-label="Project details" required></textarea>
+        <p class="c-note" id="form-note" role="status"></p>
+        <div class="c-foot"><button type="submit">Pin it →</button><a href="mailto:hello@tanrikulu.dev">or write to <b>hello@tanrikulu.dev</b></a></div>
+      </form></div>
+      <div class="handles"><i></i><i></i><i></i><i></i></div><span class="size">640 × 560</span>
+    </div>
+
+    <div class="cur" id="c1"><svg width="18" height="22" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#FF3D7F" stroke="#fff" stroke-width="1.5"/></svg><span style="background:#FF3D7F">design</span></div>
+    <div class="cur" id="c2"><svg width="18" height="22" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#00B37A" stroke="#fff" stroke-width="1.5"/></svg><span style="background:#00B37A" id="c2t">dev</span></div>
   </div>
 </div>
 
-<script>
-/* ============================================================
-   TANRIKULU.DEV — Immersive atmosphere
-   Cinematic flowing shader field + bokeh particle depth.
-   Renders in two passes (ortho color-field backdrop +
-   perspective additive particles) for natural parallax.
-   ============================================================ */
-(function () {
-  const canvas = document.getElementById('bg-canvas');
-  if (!canvas || typeof THREE === 'undefined') return;
-
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.autoClear = false;
-
-  // ---------- pass 1: flowing color field (ortho fullscreen quad) ----------
-  const bgScene = new THREE.Scene();
-  const bgCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-  const uniforms = {
-    u_time:   { value: 0 },
-    u_mouse:  { value: new THREE.Vector2(0.5, 0.5) },
-    u_aspect: { value: 1 },
-    u_scroll: { value: 0 },
-  };
-
-  const fieldMat = new THREE.ShaderMaterial({
-    uniforms,
-    vertexShader: `
-      varying vec2 vUv;
-      void main(){ vUv = uv; gl_Position = vec4(position, 1.0); }
-    `,
-    fragmentShader: `
-      precision highp float;
-      varying vec2 vUv;
-      uniform float u_time;
-      uniform vec2  u_mouse;
-      uniform float u_aspect;
-      uniform float u_scroll;
-
-      float hash(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
-      float noise(vec2 p){
-        vec2 i = floor(p), f = fract(p);
-        float a = hash(i), b = hash(i+vec2(1.,0.)), c = hash(i+vec2(0.,1.)), d = hash(i+vec2(1.,1.));
-        vec2 u = f*f*(3.-2.*f);
-        return mix(a,b,u.x) + (c-a)*u.y*(1.-u.x) + (d-b)*u.x*u.y;
-      }
-      float fbm(vec2 p){
-        float v = 0.0, a = 0.5;
-        for(int i=0;i<6;i++){ v += a*noise(p); p *= 2.0; a *= 0.5; }
-        return v;
-      }
-      void main(){
-        vec2 uv = vUv;
-        vec2 p  = uv; p.x *= u_aspect;
-        float t = u_time*0.035 + u_scroll*0.6;
-
-        vec2 q = vec2(fbm(p*1.4 + t), fbm(p*1.4 - t + 5.0));
-        vec2 r = vec2(fbm(p*1.4 + q*1.2 + t*1.3 + 1.7), fbm(p*1.4 + q*1.2 - t));
-        float f = fbm(p*1.4 + r*1.6);
-
-        vec3 cream  = vec3(0.937, 0.902, 0.839);
-        vec3 peach  = vec3(0.886, 0.733, 0.612);
-        vec3 rose    = vec3(0.831, 0.604, 0.561);
-        vec3 sage    = vec3(0.620, 0.678, 0.553);
-        vec3 ochre   = vec3(0.855, 0.667, 0.380);
-        vec3 plum    = vec3(0.541, 0.376, 0.467);
-
-        vec3 col = cream;
-        col = mix(col, peach,    smoothstep(0.20, 0.95, f)   * 0.55);
-        col = mix(col, sage,     smoothstep(0.45, 1.00, q.x)  * 0.40);
-        col = mix(col, rose,     smoothstep(0.50, 0.98, r.x)  * 0.45);
-        col = mix(col, ochre,    smoothstep(0.62, 1.00, q.y)  * 0.30);
-        col = mix(col, plum,     smoothstep(0.78, 1.00, r.y)  * 0.22);
-
-        // soft warm light following the cursor
-        vec2 m = u_mouse; m.x *= u_aspect;
-        float d = distance(p, m);
-        col = mix(col, ochre, 0.12 * exp(-d*2.4));
-        col = mix(col, rose,  0.08 * exp(-d*1.3));
-
-        // gentle warm vignette for a gallery framing (light, not dark)
-        float vig = smoothstep(1.25, 0.30, distance(uv, vec2(0.5)));
-        col = mix(col * 0.86, col, vig);
-
-        gl_FragColor = vec4(col, 1.0);
-      }
-    `,
-    depthTest: false,
-    depthWrite: false,
-  });
-  bgScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), fieldMat));
-
-  // ---------- pass 2: bokeh particle depth (perspective + additive) ----------
-  const fgScene = new THREE.Scene();
-  const fgCam = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
-  fgCam.position.z = 18;
-
-  // soft round sprite
-  const sprC = document.createElement('canvas');
-  sprC.width = sprC.height = 128;
-  const sx = sprC.getContext('2d');
-  const grd = sx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grd.addColorStop(0, 'rgba(255,255,255,1)');
-  grd.addColorStop(0.25, 'rgba(255,255,255,0.5)');
-  grd.addColorStop(1, 'rgba(255,255,255,0)');
-  sx.fillStyle = grd; sx.fillRect(0, 0, 128, 128);
-  const sprite = new THREE.CanvasTexture(sprC);
-
-  const COUNT = reduced ? 120 : 340;
-  const positions = new Float32Array(COUNT * 3);
-  const colors = new Float32Array(COUNT * 3);
-  const sizes = new Float32Array(COUNT);
-  const speeds = new Float32Array(COUNT);
-
-  const palette = [
-    [0.753, 0.388, 0.239], // terracotta
-    [0.831, 0.604, 0.561], // dusty rose
-    [0.620, 0.678, 0.553], // sage
-    [0.855, 0.667, 0.380], // ochre
-    [0.541, 0.376, 0.467], // plum
-    [1.000, 0.984, 0.945], // warm white
-  ];
-  for (let i = 0; i < COUNT; i++) {
-    positions[i*3+0] = (Math.random() - 0.5) * 48;
-    positions[i*3+1] = (Math.random() - 0.5) * 30;
-    positions[i*3+2] = (Math.random() - 0.5) * 30 - 4;
-    const c = palette[(Math.random() * palette.length) | 0];
-    // bias toward dim so it stays cinematic
-    const dim = 0.35 + Math.random() * 0.65;
-    colors[i*3+0] = c[0] * dim;
-    colors[i*3+1] = c[1] * dim;
-    colors[i*3+2] = c[2] * dim;
-    sizes[i] = 0.6 + Math.random() * 3.4;
-    speeds[i] = 0.1 + Math.random() * 0.5;
-  }
-  const pGeo = new THREE.BufferGeometry();
-  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  pGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  pGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-  const pMat = new THREE.ShaderMaterial({
-    uniforms: { u_tex: { value: sprite }, u_time: { value: 0 } },
-    vertexShader: `
-      attribute float size;
-      varying vec3 vColor;
-      uniform float u_time;
-      void main(){
-        vColor = color;
-        vec3 pos = position;
-        pos.y += sin(u_time*0.3 + position.x*0.2) * 0.4;
-        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
-        gl_PointSize = size * (300.0 / -mv.z);
-        gl_Position = projectionMatrix * mv;
-      }
-    `,
-    fragmentShader: `
-      varying vec3 vColor;
-      uniform sampler2D u_tex;
-      void main(){
-        float a = texture2D(u_tex, gl_PointCoord).a;
-        gl_FragColor = vec4(vColor, a);
-      }
-    `,
-    transparent: true,
-    vertexColors: true,
-    blending: THREE.NormalBlending,
-    depthTest: false,
-    depthWrite: false,
-  });
-  const points = new THREE.Points(pGeo, pMat);
-  fgScene.add(points);
-
-  // ---------- interaction state ----------
-  const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
-  window.addEventListener('mousemove', (e) => {
-    mouse.tx = e.clientX / window.innerWidth;
-    mouse.ty = e.clientY / window.innerHeight;
-  });
-  window.addEventListener('touchmove', (e) => {
-    if (!e.touches[0]) return;
-    mouse.tx = e.touches[0].clientX / window.innerWidth;
-    mouse.ty = e.touches[0].clientY / window.innerHeight;
-  }, { passive: true });
-
-  let scrollN = 0;
-  function onScroll() {
-    const max = document.body.scrollHeight - window.innerHeight;
-    scrollN = max > 0 ? window.scrollY / max : 0;
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  function resize() {
-    const w = window.innerWidth, h = window.innerHeight;
-    renderer.setSize(w, h, false);
-    uniforms.u_aspect.value = w / h;
-    fgCam.aspect = w / h;
-    fgCam.updateProjectionMatrix();
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  // ---------- render loop ----------
-  const clock = new THREE.Clock();
-  function tick() {
-    const dt = clock.getDelta();
-    const t = clock.getElapsedTime();
-
-    mouse.x += (mouse.tx - mouse.x) * 0.05;
-    mouse.y += (mouse.ty - mouse.y) * 0.05;
-
-    uniforms.u_time.value = t;
-    uniforms.u_mouse.value.set(mouse.x, 1.0 - mouse.y);
-    uniforms.u_scroll.value = scrollN;
-    pMat.uniforms.u_time.value = t;
-
-    // camera drifts with cursor + scroll for a "camera move" feel
-    fgCam.position.x += ((mouse.x - 0.5) * 6 - fgCam.position.x) * 0.04;
-    fgCam.position.y += ((-(mouse.y - 0.5) * 4) - fgCam.position.y) * 0.04;
-    fgCam.position.z = 18 - scrollN * 6;
-    fgCam.lookAt(0, 0, -4);
-
-    points.rotation.y = t * 0.02 + (mouse.x - 0.5) * 0.3;
-    points.rotation.x = scrollN * 0.4;
-
-    renderer.clear();
-    renderer.render(bgScene, bgCam);
-    renderer.render(fgScene, fgCam);
-    requestAnimationFrame(tick);
-  }
-  tick();
-})();
-
-</script>
-<script>
-  // ---------- custom cursor (instant) ----------
-  const cur = document.getElementById('cursor');
-  addEventListener('mousemove', e => { cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px'; });
-  document.querySelectorAll('a, button, [data-open-modal], .service-opt, .modal-input, .modal-textarea').forEach(el => {
-    el.addEventListener('mouseenter', () => cur.classList.add('hover'));
-    el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
-  });
-
-  // ---------- modal ----------
-  const modal = document.getElementById('modal');
-  const form = document.getElementById('brief-form');
-  function openModal(){ modal.hidden = false; requestAnimationFrame(() => modal.classList.add('open')); document.body.classList.add('modal-open'); }
-  function closeModal(){ modal.classList.remove('open'); document.body.classList.remove('modal-open'); setTimeout(() => { modal.hidden = true; }, 400); }
-  document.querySelectorAll('[data-open-modal]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); openModal(); }));
-  document.getElementById('modal-close').addEventListener('click', closeModal);
-  document.getElementById('modal-cancel').addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const btn = form.querySelector('.btn-send');
-    btn.innerHTML = '✓ Sent — we\'ll be in touch';
-    btn.style.background = 'var(--sage)';
-    setTimeout(closeModal, 1400);
-  });
-
-  // ---------- reveal (animation-based; robust everywhere) ----------
-  document.querySelectorAll('.reveal').forEach((el) => {
-    const sibs = el.parentElement ? [...el.parentElement.children].filter(c => c.classList.contains('reveal')) : [];
-    if (sibs.length > 1) el.dataset.delay = (sibs.indexOf(el) * 90);
-  });
-  function checkReveals(){
-    const vh = window.innerHeight;
-    document.querySelectorAll('.reveal:not(.in)').forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (r.top < vh * 0.92 && r.bottom > 0){
-        el.style.animationDelay = (el.dataset.delay || 0) + 'ms';
-        el.classList.add('in');
-      }
-    });
-  }
-  addEventListener('scroll', checkReveals, { passive: true });
-  addEventListener('resize', checkReveals);
-  setTimeout(checkReveals, 0);
-  [80, 300, 700, 1400].forEach(t => setTimeout(checkReveals, t));
-
-  // ---------- parallax depth on holo field ----------
-  const holoField = document.querySelector('.holo-field');
-  addEventListener('mousemove', e => {
-    const dx = (e.clientX / innerWidth - 0.5);
-    const dy = (e.clientY / innerHeight - 0.5);
-    if (holoField) holoField.style.transform = `translate(${-dx*40}px, ${-dy*40}px)`;
-  });
-
-  // ---------- scroll-driven scene parallax + hint fade ----------
-  const scenes = document.querySelectorAll('[data-parallax-scene]');
-  const hint = document.getElementById('scroll-hint');
-  addEventListener('scroll', () => {
-    if (hint) hint.style.opacity = scrollY > 200 ? '0' : '1';
-    scenes.forEach(s => {
-      const r = s.getBoundingClientRect();
-      const center = r.top + r.height/2 - innerHeight/2;
-      const p = Math.max(-1, Math.min(1, -center / innerHeight));
-      s.style.setProperty('transform', `translateY(${p * 14}px)`);
-    });
-  }, { passive: true });
-</script>
+<div class="ui topbar">
+  <a class="brandmark" href="#" data-stop-home aria-label="tanrikulu.dev home"><span class="logo"><span>t<i>.</i></span></span><b>tanrikulu.dev</b></a>
+  <span class="mid">studio board · autosaved just now</span>
+  <div class="tb-r"><nav class="lang" aria-label="Language"><a href="/" hreflang="en" class="on">EN</a><a href="/tr" hreflang="tr" lang="tr">TR</a></nav><button class="share" data-go="f-contact">Hire us</button></div>
+</div>
+<div class="ui dock" id="dock">
+  <span class="step" id="step">01 / 06</span>
+  <button data-key="home" class="on">Home</button><button data-key="services">Services</button><button data-key="app">App</button><button data-key="brand">Brand</button><button data-key="process">Process</button><button data-key="contact">Contact</button><button id="overview">⤢ Overview</button>
+  <span class="bar"><i id="bar"></i></span>
+</div>
+<div class="ui zoom" id="zoom">100%</div>
+<div class="ui mini"><canvas id="mini" width="360" height="240"></canvas></div>
+<div class="help" id="help">scroll to walk the board ↓ · drag to look around</div>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>

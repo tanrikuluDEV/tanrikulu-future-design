@@ -1,0 +1,9 @@
+{
+  "name": "Tanrikulu.dev",
+  "short_name": "Tanrikulu",
+  "icons": [{ "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }, { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }],
+  "theme_color": "#E9E7E1",
+  "background_color": "#E9E7E1",
+  "display": "standalone",
+  "start_url": "/"
+}
