@@ -536,20 +536,33 @@ addEventListener('resize', () => {
   computeStops();
 });
 
-// ---------- contact: open the visitor's mail app with the brief filled in ----------
+// ---------- contact: send the brief straight to hello@tanrikulu.dev ----------
 (function contactForm() {
   const form = document.getElementById('brief'), note = document.getElementById('form-note');
-  form.addEventListener('submit', (e) => {
+  const btn = form.querySelector('button[type="submit"]'), label = btn.textContent;
+  const say = (msg, cls) => { note.textContent = msg; note.className = 'c-note ' + cls; };
+  let busy = false;
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (busy) return;
     let ok = true;
     form.querySelectorAll('[required]').forEach((el) => {
       const valid = el.value.trim() !== '' && (el.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim()));
       el.classList.toggle('bad', !valid); if (!valid) ok = false;
     });
-    if (!ok) { note.textContent = tx('Please add your name, a valid email and a few words about the project.', 'Lütfen adını, geçerli bir e-posta adresini ve projeyle ilgili birkaç kelime yaz.'); note.className = 'c-note err'; return; }
-    const d = new FormData(form);
-    const body = [`${tx('Name', 'Ad')}: ${d.get('name')}`, `${tx('Email', 'E-posta')}: ${d.get('email')}`, '', d.get('details')].join('\n');
-    location.href = `mailto:hello@tanrikulu.dev?subject=${encodeURIComponent(tx('Project brief — ', 'Proje özeti — ') + d.get('name'))}&body=${encodeURIComponent(body)}`;
-    note.textContent = tx('Your email app should open now — just hit send.', 'E-posta uygulaman şimdi açılacak, sadece gönder\'e bas.'); note.className = 'c-note ok';
+    if (!ok) return say(tx('Please add your name, a valid email and a few words about the project.', 'Lütfen adını, geçerli bir e-posta adresini ve projeyle ilgili birkaç kelime yaz.'), 'err');
+    const d = Object.fromEntries(new FormData(form));
+    busy = true; btn.disabled = true; btn.textContent = tx('Pinning…', 'İliştiriliyor…'); say('', '');
+    try {
+      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...d, lang: TR ? 'tr' : 'en' }) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || res.status);
+      form.reset();
+      say(tx('Pinned! Your note reached us — we’ll reply within a day.', 'İliştirildi! Notun bize ulaştı, bir gün içinde dönüş yapacağız.'), 'ok');
+    } catch {
+      say(tx('Couldn’t send right now. Please try again, or write to hello@tanrikulu.dev.', 'Şu an gönderilemedi. Lütfen tekrar dene ya da hello@tanrikulu.dev adresine yaz.'), 'err');
+    } finally {
+      busy = false; btn.disabled = false; btn.textContent = label;
+    }
   });
 })();

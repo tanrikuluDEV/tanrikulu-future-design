@@ -422,5 +422,7 @@ svg.arrows { position: absolute; left: 0; top: 0; overflow: visible; pointer-eve
 .c-note { min-height: 0; font: 500 14px var(--sans); color: var(--soft); margin: -8px 0 -6px; }
 .c-note:empty { display: none; }
 .c-note.err { color: #D11A4F; } .c-note.ok { color: #00804F; }
+.contact .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.contact button:disabled { opacity: .6; cursor: progress; }
 .contact .bad { border-color: #FF3D7F; }
 .noscript { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; background: var(--bg); z-index: 100; font: 500 18px var(--sans); }
