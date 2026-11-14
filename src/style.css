@@ -405,7 +405,7 @@ svg.arrows { position: absolute; left: 0; top: 0; overflow: visible; pointer-eve
   .st3 { left: 0 !important; top: 5340px !important; } .st4 { left: 230px !important; top: 5365px !important; }
 
   #f-contact { left: 0 !important; top: 5720px !important; width: 440px !important; height: 640px !important; }
-  .contact { padding: 34px; } .contact h2 { font-size: 46px; }
+  .contact, .c-done, .env-note { padding: 34px; } .contact h2, .c-done h2 { font-size: 46px; }
   .c-foot { flex-direction: column; align-items: flex-start; }
 
   #arrows, .note:not(.pnote), #c1, #c2 { display: none !important; }
@@ -425,4 +425,40 @@ svg.arrows { position: absolute; left: 0; top: 0; overflow: visible; pointer-eve
 .contact .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .contact button:disabled { opacity: .6; cursor: progress; }
 .contact .bad { border-color: #FF3D7F; }
+/* sending: four cursors fold the note into an envelope */
+.frame__body { transition: background .35s, box-shadow .35s; }
+.frame__body.emptied { background: transparent; box-shadow: inset 0 0 0 1.5px rgba(20,20,20,.14); }
+.env { position: absolute; left: 0; top: 0; z-index: 31; pointer-events: none; }
+.env-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.e-body { fill: #fff; stroke: var(--ink); stroke-width: 0; }
+.e-flap { fill: #fff; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; opacity: 0; }
+.e-flap.on { opacity: 1; }
+.e-edit { opacity: 0; transition: opacity .25s; }
+.e-edit.on { opacity: 1; }
+.e-line { fill: none; stroke: var(--sel); stroke-width: 1.5; stroke-linejoin: round; }
+.e-pt { fill: #fff; stroke: var(--sel); stroke-width: 1.5; transition: fill .15s; }
+.e-pt.hot { fill: var(--sel); }
+.env-note { position: absolute; left: 0; top: 0; padding: 48px; display: flex; flex-direction: column; gap: 10px; }
+.env-note small { font: 500 13px var(--mono); color: var(--soft); margin-bottom: 14px; }
+.env-note b { font-size: 30px; font-weight: 800; letter-spacing: -.03em; }
+.env-note i { font: 500 15px var(--mono); font-style: normal; color: var(--soft); }
+.env-note p { margin-top: 18px; font: 700 34px/1.1 var(--hand); color: var(--ink); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.env-seal { position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--mag); color: #fff; font: 900 15px/1 var(--sans); letter-spacing: -.07em; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--ink); transform: scale(0); }
+.env-seal i { font-style: normal; color: var(--yel); }
+.env-link { position: absolute; left: 0; top: 0; z-index: 30; overflow: visible; pointer-events: none; }
+.env-link path { fill: none; stroke: var(--sel); stroke-width: 2; stroke-linecap: round; }
+.env-link circle { fill: var(--sel); }
+@media (max-width: 760px) { .env-note { padding: 34px; } }
+.mcur { position: absolute; left: 0; top: 0; z-index: 33; pointer-events: none; }
+.mcur svg { display: block; filter: drop-shadow(0 3px 4px rgba(0,0,0,.35)); transition: transform .12s; transform-origin: 0 0; }
+.mcur.press svg { transform: scale(.82); }
+.mcur span { position: absolute; left: 18px; top: 22px; color: #fff; font: 500 13px var(--mono); padding: 4px 9px; border-radius: 4px 12px 12px 12px; white-space: nowrap; }
+.c-tag { font: 500 12px var(--mono); color: #00804F; background: #DDF7EA; padding: 5px 10px; border-radius: 99px; }
+.c-done { position: absolute; inset: 0; z-index: 2; padding: 48px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 18px; background: #fff; }
+.c-done[hidden] { display: none; }
+.c-done h2 { font-size: 62px; letter-spacing: -.045em; line-height: .92; font-weight: 800; }
+.c-done p { font-size: 19px; line-height: 1.4; color: var(--soft); max-width: 30ch; }
+.c-done p b { color: var(--ink); font-weight: 600; overflow-wrap: anywhere; }
+.c-done button { background: transparent; color: var(--ink); border: 2px solid var(--ink); border-radius: 99px; padding: 13px 22px; font: 700 16px var(--sans); cursor: pointer; }
+.c-done button:hover { background: var(--ink); color: #fff; }
 .noscript { position: fixed; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; background: var(--bg); z-index: 100; font: 500 18px var(--sans); }

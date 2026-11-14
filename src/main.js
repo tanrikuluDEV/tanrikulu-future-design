@@ -536,33 +536,182 @@ addEventListener('resize', () => {
   computeStops();
 });
 
-// ---------- contact: send the brief straight to hello@tanrikulu.dev ----------
+// ---------- contact: four cursors fold the note into an envelope and send it off ----------
 (function contactForm() {
   const form = document.getElementById('brief'), note = document.getElementById('form-note');
+  const frame = document.getElementById('f-contact'), fbody = frame.querySelector('.frame__body');
   const btn = form.querySelector('button[type="submit"]'), label = btn.textContent;
   const say = (msg, cls) => { note.textContent = msg; note.className = 'c-note ' + cls; };
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const anim = (el, kf, o = {}) => el.animate(kf, { duration: 600, easing: 'cubic-bezier(.55,0,.2,1)', fill: 'forwards', ...o }).finished;
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  // "sent" panel shown after a successful send
+  const done = el('div', 'c-done'); done.hidden = true;
+  done.innerHTML = `<span class="c-tag">${tx('✓ delivered to hello@tanrikulu.dev', '✓ hello@tanrikulu.dev adresine ulaştı')}</span><h2>${tx('Sent.<br>Talk soon.', 'Gönderildi.<br>Görüşmek üzere.')}</h2><p></p><button type="button">${tx('Write another note', 'Bir not daha yaz')}</button>`;
+  fbody.appendChild(done);
+  const doneP = done.querySelector('p');
+
+  const CURS = [['#FF3D7F', tx('design', 'tasarım')], ['#00B37A', 'frontend'], ['#2E5BFF', tx('motion', 'hareket')], ['#FF8A3D', tx('brand', 'marka')]];
+  const makeCursor = ([c, name]) => {
+    const e = el('div', 'mcur'); e.setAttribute('aria-hidden', 'true');
+    e.innerHTML = `<svg width="22" height="26" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="${c}" stroke="#fff" stroke-width="1.4"/></svg><span style="background:${c}">${name}</span>`;
+    frame.appendChild(e); return e;
+  };
+
+  // rAF tweens: the envelope is a vector path edited live, so cursors and geometry move in lockstep
+  const ease = { io: (t) => (t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2), out: (t) => 1 - (1 - t) ** 3, in: (t) => t * t * t };
+  const tween = (dur, fn, e = ease.io, delay = 0) => new Promise((done) => {
+    let t0 = null;
+    const step = (now) => { t0 ??= now + delay; const t = Math.max(0, Math.min(1, (now - t0) / dur)); fn(e(t)); t < 1 ? requestAnimationFrame(step) : done(); };
+    requestAnimationFrame(step);
+  });
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const SVG = 'http://www.w3.org/2000/svg';
+  const sv = (tag, attrs, parent) => { const e = document.createElementNS(SVG, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent?.appendChild(e); return e; };
+
+  async function playSend(d, sent) {
+    const W = frame.offsetWidth, H = frame.offsetHeight;
+    const ew = Math.min(260, W * .46), eh = Math.round(ew * .64), ex = (W - ew) / 2, ey = (H - eh) / 2, cx = W / 2, cy = H / 2;
+
+    // layers: the vector envelope (with its edit overlay), the note text, the seal
+    const env = el('div', 'env'); env.setAttribute('aria-hidden', 'true');
+    env.style.cssText = `width:${W}px;height:${H}px;transform-origin:${cx}px ${cy}px`;
+    const svg = sv('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'env-svg' }, env);
+    const body = sv('rect', { class: 'e-body' }, svg);
+    const flap = sv('path', { class: 'e-flap' }, svg);
+    const edit = sv('g', { class: 'e-edit' }, svg);
+    const eBody = sv('rect', { class: 'e-line' }, edit), eFlap = sv('path', { class: 'e-line' }, edit);
+    const anchors = [0, 1, 2, 3, 4].map(() => sv('rect', { class: 'e-pt', width: 8, height: 8 }, edit));
+    const noteL = el('div', 'env-note');
+    noteL.append(el('small', '', tx('to hello@tanrikulu.dev', 'kime: hello@tanrikulu.dev')), el('b', '', d.name.trim()), el('i', '', d.email.trim()), el('p', '', d.details.trim()));
+    noteL.style.cssText = `width:${W}px;height:${H}px`;
+    const seal = el('div', 'env-seal'); seal.innerHTML = '<span>t<i>.</i></span>';
+    env.append(noteL, seal); frame.appendChild(env);
+
+    let R = { x: 0, y: 0, w: W, h: H }, tip = { x: cx, y: 0 }, sw = 0;
+    const draw = () => {
+      const r = Math.round(lerp(4, 6, (R.w - ew) / (W - ew || 1)));
+      for (const b of [body, eBody]) { b.setAttribute('x', R.x); b.setAttribute('y', R.y); b.setAttribute('width', R.w); b.setAttribute('height', R.h); b.setAttribute('rx', r); }
+      body.style.strokeWidth = sw;
+      const fp = `M${R.x + 1},${R.y + 1} L${tip.x},${tip.y} L${R.x + R.w - 1},${R.y + 1}`;
+      flap.setAttribute('d', fp); eFlap.setAttribute('d', fp);
+      [[R.x, R.y], [R.x + R.w, R.y], [R.x + R.w, R.y + R.h], [R.x, R.y + R.h], [tip.x, tip.y]].forEach(([x, y], i) => { anchors[i].setAttribute('x', x - 4); anchors[i].setAttribute('y', y - 4); });
+    };
+    draw();
+
+    // cursors (rAF-driven so they stay glued to the vector points)
+    const out = 70, from = [[-out, -out], [W + out, -out], [W + out, H + out], [-out, H + out]];
+    const C = CURS.map((c, i) => { const e = makeCursor(c); const k = { e, x: from[i][0], y: from[i][1] }; k.set = (x, y) => { k.x = x; k.y = y; e.style.transform = `translate(${x}px,${y}px)`; }; k.set(k.x, k.y); return k; });
+    const corner = (i) => [[R.x, R.y], [R.x + R.w, R.y], [R.x + R.w, R.y + R.h], [R.x, R.y + R.h]][i];
+    const moveTo = (k, x, y, dur, e = ease.io, delay = 0) => { const x0 = k.x, y0 = k.y; return tween(dur, (t) => k.set(lerp(x0, x, t), lerp(y0, y, t)), e, delay); };
+
+    // 1. the note becomes a sheet; four cursors grab its corners
+    anim(form, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 });
+    fbody.classList.add('emptied');
+    await Promise.all(C.map((k, i) => moveTo(k, ...corner(i), 650, ease.out, i * 70)));
+    C.forEach((k) => k.e.classList.add('press'));
+    await wait(160);
+
+    // 2. pull the corners in: the sheet collapses to a crisp outlined rectangle
+    const R0 = { ...R };
+    await tween(780, (t) => {
+      R = { x: lerp(R0.x, ex, t), y: lerp(R0.y, ey, t), w: lerp(R0.w, ew, t), h: lerp(R0.h, eh, t) };
+      tip = { x: cx, y: R.y + 1 }; sw = lerp(0, 2, Math.min(1, t * 1.6));
+      noteL.style.opacity = Math.max(0, 1 - t * 3);
+      draw(); C.forEach((k, i) => k.set(...corner(i)));
+    });
+
+    // 3. vector edit mode: anchors appear, "motion" grabs the top midpoint and pulls the flap down
+    edit.classList.add('on'); flap.classList.add('on');
+    const drag = C[2];
+    drag.e.classList.remove('press');
+    await moveTo(drag, cx, ey, 480);
+    drag.e.classList.add('press'); anchors[4].classList.add('hot');
+    await wait(120);
+    const tipY = ey + eh * .56;
+    await tween(620, (t) => { tip = { x: cx, y: lerp(ey + 1, tipY, t) }; draw(); drag.set(tip.x, tip.y); }, ease.io);
+    drag.e.classList.remove('press'); anchors[4].classList.remove('hot');
+    await wait(160);
+
+    // 4. seal it, leave edit mode, everyone lets go
+    edit.classList.remove('on');
+    seal.style.cssText = `left:${cx - 15}px;top:${tipY - 15}px`;
+    anim(seal, [{ transform: 'scale(0)' }, { transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.3,1.5,.5,1)' });
+    const away = [[-out * 2, cy - 60], [W + out, -out * 2], [W + out * 2, cy + 40], [-out, H + out * 2]];
+    C.forEach((k, i) => { k.e.classList.remove('press'); moveTo(k, ...away[i], 650, ease.in, 120 + i * 60); anim(k.e, [{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: 300 + i * 60 }); });
+    setTimeout(() => C.forEach((k) => k.e.remove()), 1300);
+
+    // 5. wait for the mail (the envelope floats), then it rides a prototype connector off the board
+    const float = env.animate([{ translate: '0 0' }, { translate: '0 -5px' }, { translate: '0 0' }], { duration: 1000, iterations: Infinity, easing: 'ease-in-out' });
+    const ok = await sent;
+    float.cancel();
+    if (ok) {
+      const link = sv('svg', { width: W, height: H, class: 'env-link', 'aria-hidden': 'true' });
+      const p0 = [ex + ew + 6, cy], p3 = [W + 90, -90];
+      const path = sv('path', { d: `M${p0} C${p0[0] + 150},${p0[1]} ${p3[0] - 40},${p0[1] - 40} ${p3}` }, link);
+      const dot = sv('circle', { r: 4.5, cx: p0[0], cy: p0[1] }, link);
+      frame.appendChild(link);
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = len;
+      await tween(420, (t) => { path.style.strokeDashoffset = len * (1 - t); const q = path.getPointAtLength(len * t); dot.setAttribute('cx', q.x); dot.setAttribute('cy', q.y); }, ease.out);
+      await wait(120);
+      await tween(720, (t) => {
+        const q = path.getPointAtLength(len * t);
+        env.style.transform = `translate(${q.x - p0[0] + (t * ew) / 2}px,${q.y - p0[1]}px) rotate(${-10 * t}deg) scale(${lerp(1, .4, t)})`;
+        env.style.opacity = t < .7 ? 1 : 1 - (t - .7) / .3;
+        path.style.strokeDashoffset = -len * t;
+      }, ease.in);
+      link.remove();
+    } else {
+      await anim(env, [{ rotate: '0deg' }, { rotate: '-4deg' }, { rotate: '4deg' }, { rotate: '-3deg' }, { rotate: '0deg' }], { duration: 500, fill: 'none' });
+      await anim(env, [{ opacity: 1, scale: 1 }, { opacity: 0, scale: .9 }], { duration: 350 });
+    }
+    env.remove();
+    return ok;
+  }
+
   let busy = false;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (busy) return;
     let ok = true;
-    form.querySelectorAll('[required]').forEach((el) => {
-      const valid = el.value.trim() !== '' && (el.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim()));
-      el.classList.toggle('bad', !valid); if (!valid) ok = false;
+    form.querySelectorAll('[required]').forEach((f) => {
+      const valid = f.value.trim() !== '' && (f.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value.trim()));
+      f.classList.toggle('bad', !valid); if (!valid) ok = false;
     });
     if (!ok) return say(tx('Please add your name, a valid email and a few words about the project.', 'Lütfen adını, geçerli bir e-posta adresini ve projeyle ilgili birkaç kelime yaz.'), 'err');
     const d = Object.fromEntries(new FormData(form));
-    busy = true; btn.disabled = true; btn.textContent = tx('Pinning…', 'İliştiriliyor…'); say('', '');
-    try {
-      const res = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...d, lang: TR ? 'tr' : 'en' }) });
-      const out = await res.json().catch(() => ({}));
-      if (!res.ok || !out.ok) throw new Error(out.error || res.status);
-      form.reset();
-      say(tx('Pinned! Your note reached us — we’ll reply within a day.', 'İliştirildi! Notun bize ulaştı, bir gün içinde dönüş yapacağız.'), 'ok');
-    } catch {
+    busy = true; btn.disabled = true; btn.textContent = tx('Sending…', 'Gönderiliyor…'); say('', '');
+
+    // the request runs while the animation plays
+    const sent = fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...d, lang: TR ? 'tr' : 'en' }) })
+      .then(async (res) => { const out = await res.json().catch(() => ({})); return res.ok && out.ok === true; })
+      .catch(() => false);
+    const okSent = reduce ? await sent : await playSend(d, sent);
+
+    if (okSent) {
+      doneP.textContent = '';
+      doneP.append(tx('We’ll reply to ', 'Bir gün içinde '), el('b', '', d.email.trim()), tx(' within a day.', ' adresine dönüş yapacağız.'));
+      done.hidden = false; form.inert = true; form.reset(); fbody.classList.remove('emptied');
+      if (!reduce) anim(done, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 450 });
+    } else {
+      fbody.classList.remove('emptied');
+      form.getAnimations().forEach((a) => a.cancel());
+      if (!reduce) anim(form, [{ opacity: 0 }, { opacity: 1 }], { duration: 350, fill: 'none' });
       say(tx('Couldn’t send right now. Please try again, or write to hello@tanrikulu.dev.', 'Şu an gönderilemedi. Lütfen tekrar dene ya da hello@tanrikulu.dev adresine yaz.'), 'err');
-    } finally {
-      busy = false; btn.disabled = false; btn.textContent = label;
     }
+    busy = false; btn.disabled = false; btn.textContent = label;
+  });
+
+  done.querySelector('button').addEventListener('click', async () => {
+    if (busy) return;
+    busy = true;
+    if (!reduce) await anim(done, [{ opacity: 1 }, { opacity: 0 }], { duration: 250 });
+    done.getAnimations().forEach((a) => a.cancel());
+    done.hidden = true; form.inert = false; fbody.classList.remove('emptied');
+    form.getAnimations().forEach((a) => a.cancel());
+    if (!reduce) await anim(form, [{ opacity: 0 }, { opacity: 1 }], { duration: 350, fill: 'none' });
+    busy = false; form.elements.name.focus({ preventScroll: true });
   });
 })();
