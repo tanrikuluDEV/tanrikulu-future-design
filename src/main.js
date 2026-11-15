@@ -170,11 +170,16 @@ function glide(v) { // momentum after a touch swipe, like native scrolling
   (function step() { if (mode !== 'tour' || Math.abs(v) < .05) return; advance(v * 16); v *= .94; requestAnimationFrame(step); })();
 }
 
+// the hero word's resting colour follows the theme (light: near-black, dark: off-white)
+const DARK = matchMedia('(prefers-color-scheme: dark)');
+const isDark = () => (document.documentElement.dataset.theme || (DARK.matches ? 'dark' : 'light')) === 'dark';
+const INK = () => isDark() ? [237, 235, 230] : [20, 20, 20];
+
 // arrows: through the process notes, then down to contact
 const arrows = document.getElementById('arrows');
 arrows.innerHTML = [[1910, 1640, 1990, 1660], [2220, 1660, 2300, 1630], [2530, 1630, 2610, 1670], [2720, 1820, 2440, 1980]].map(([a, b, c, d]) =>
-  `<path d="M${a} ${b} C ${(a + c) / 2} ${b - 60}, ${(a + c) / 2} ${d - 60}, ${c} ${d}" fill="none" stroke="#141414" stroke-width="3" stroke-linecap="round" marker-end="url(#h)"/>`).join('') +
-  '<defs><marker id="h" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#141414"/></marker></defs>';
+  `<path d="M${a} ${b} C ${(a + c) / 2} ${b - 60}, ${(a + c) / 2} ${d - 60}, ${c} ${d}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" marker-end="url(#h)"/>`).join('') +
+  '<defs><marker id="h" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>';
 
 // fake collaborators
 const c1 = document.getElementById('c1'), c2 = document.getElementById('c2'), c2t = document.getElementById('c2t');
@@ -186,12 +191,36 @@ function along(pts, t) { const n = pts.length, s = t % n, i = Math.floor(s), f =
 // minimap (click to jump)
 const mini = document.getElementById('mini'), mc = mini.getContext('2d');
 const ms = () => Math.min(mini.width / WORLD.w, mini.height / WORLD.h);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+let MP; const readMini = () => { MP = { bg: css('--mini-bg'), fr: css('--mini-fr'), sel: css('--sel'), ink: css('--ink') }; };
+readMini();
+
+// theme toggle: follows the system until the visitor picks one; the choice is remembered
+(function () {
+  const btn = document.getElementById('theme'), root = document.documentElement;
+  const metas = document.querySelectorAll('meta[name="theme-color"]');
+  const sync = () => {
+    const d = isDark();
+    btn.setAttribute('aria-label', d ? tx('Switch to light mode', 'Açık temaya geç') : tx('Switch to dark mode', 'Koyu temaya geç'));
+    btn.title = btn.getAttribute('aria-label');
+    if (root.dataset.theme) metas.forEach((m) => m.setAttribute('content', d ? '#111110' : '#E9E7E1'));
+    readMini(); try { drawMini(); } catch {}
+  };
+  DARK.addEventListener('change', sync);
+  btn.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    const apply = () => { root.dataset.theme = next; try { localStorage.setItem('theme', next); } catch {} sync(); };
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return apply();
+    document.startViewTransition(apply); // an even cross-fade between the two themes
+  });
+  sync();
+})();
 function drawMini() {
   const s = ms();
-  mc.fillStyle = '#F4F2EE'; mc.fillRect(0, 0, mini.width, mini.height);
-  frames.forEach((f) => { const r = box(f); mc.fillStyle = f.classList.contains('sel') ? '#2E5BFF' : '#D9D5CC'; mc.fillRect((r.x - WORLD.x) * s, (r.y - WORLD.y) * s, r.w * s, r.h * s); });
+  mc.fillStyle = MP.bg; mc.fillRect(0, 0, mini.width, mini.height);
+  frames.forEach((f) => { const r = box(f); mc.fillStyle = f.classList.contains('sel') ? MP.sel : MP.fr; mc.fillRect((r.x - WORLD.x) * s, (r.y - WORLD.y) * s, r.w * s, r.h * s); });
   const g = box(document.getElementById('g-process')); mc.fillStyle = '#FFD84A'; mc.fillRect((g.x - WORLD.x) * s, (g.y + 80 - WORLD.y) * s, g.w * s, 200 * s);
-  mc.strokeStyle = '#141414'; mc.lineWidth = 3;
+  mc.strokeStyle = MP.ink; mc.lineWidth = 3;
   mc.strokeRect((-cam.x / cam.z - WORLD.x) * s, (-cam.y / cam.z - WORLD.y) * s, innerWidth / cam.z * s, innerHeight / cam.z * s);
 }
 mini.addEventListener('click', (e) => {
@@ -284,7 +313,7 @@ setInterval(() => { if (!reduce && performance.now() > aPausedUntil) aShow((aIdx
   const S = (el) => st.get(el);
   const apply = (el) => { const t = S(el); el.style.transform = `translate(${t.x}px,${t.y}px) rotate(${t.r || 0}deg) scale(${t.s ?? 1})`; el.style.opacity = t.o ?? 1;
     if (t.w != null) el.style.fontWeight = Math.round(t.w);
-    if (t.c != null) { const a = t.ca || [20, 20, 20], b = t.cb || [255, 61, 127]; el.style.color = `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t.c)).join(',')})`; } };
+    if (t.c != null) { const a = t.ca || INK(), b = t.cb || [255, 61, 127]; el.style.color = !t.ca && !t.c ? '' : `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t.c)).join(',')})`; } };
   const set = (el, v) => { st.set(el, { ...(S(el) || {}), ...v }); apply(el); };
   const easeIO = (k) => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
   const easeOut = (k) => 1 - Math.pow(1 - k, 3);
@@ -347,7 +376,7 @@ setInterval(() => { if (!reduce && performance.now() > aPausedUntil) aShow((aIdx
   function scatter() {
     const sc = Q.scatter;
     set(W1, { ...sc.w1, w: 500, o: 1 }); set(W2, { ...sc.w2, w: 500, o: 1 }); set(W3, { ...sc.w3, w: 500, o: 1 }); W4.textContent = W4TXT; W4.classList.remove('hl'); PILL.style.background = ''; set(STAMP, { ...Q.stamp, r: -9, o: 0 });
-    set(W4, { ...sc.w4, c: 0, ca: [20, 20, 20], cb: [255, 61, 127], o: 1 });
+    set(W4, { ...sc.w4, c: 0, ca: null, cb: [255, 61, 127], o: 1 });
     set(PILL, { ...sc.pill, o: 1 }); set(BADGE, { ...sc.badge, o: 1 }); set(ICON, { ...sc.icon, o: 1 });
     set(HP, { ...Q.hp, s: 1, r: 0, o: 0 }); typed.textContent = '';
     set(COM, { ...Q.com, s: .6, r: 0, o: 0 }); set(SW, { x: 0, y: 0, s: .8, r: 0, o: 0 });

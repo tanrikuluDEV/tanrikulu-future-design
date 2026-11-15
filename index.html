@@ -7,7 +7,10 @@
   <meta name="description" content="Independent studio designing and building iOS &amp; Android apps, fast Next.js websites and brand identities, from the first call to launch and beyond." />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="author" content="Tanrikulu.dev" />
-  <meta name="theme-color" content="#E9E7E1" />
+  <meta name="color-scheme" content="light dark" />
+  <script>try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t}catch(e){}</script>
+  <meta name="theme-color" content="#E9E7E1" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
   <link rel="canonical" href="https://tanrikulu.dev/" />
   <link rel="alternate" hreflang="en" href="https://tanrikulu.dev/" />
   <link rel="alternate" hreflang="tr" href="https://tanrikulu.dev/tr" />
@@ -212,7 +215,7 @@
 <div class="ui topbar">
   <a class="brandmark" href="#" data-stop-home aria-label="tanrikulu.dev home"><span class="logo"><span>t<i>.</i></span></span><b>tanrikulu.dev</b></a>
   <span class="mid">studio board · autosaved just now</span>
-  <div class="tb-r"><nav class="lang" aria-label="Language"><a href="/" hreflang="en" class="on">EN</a><a href="/tr" hreflang="tr" lang="tr">TR</a></nav><button class="share" data-go="f-contact">Hire us</button></div>
+  <div class="tb-r"><button class="theme" id="theme" type="button" aria-label="Switch to dark mode"><svg class="tg-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><svg class="tg-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z"/><circle cx="17.2" cy="5.6" r="1.1"/><circle cx="20.2" cy="9" r=".7"/></svg></button><nav class="lang" aria-label="Language"><a href="/" hreflang="en" class="on">EN</a><a href="/tr" hreflang="tr" lang="tr">TR</a></nav><button class="share" data-go="f-contact">Hire us</button></div>
 </div>
 <div class="ui dock" id="dock">
   <span class="step" id="step">01 / 06</span>
