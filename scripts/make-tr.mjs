@@ -83,9 +83,29 @@ R("← real app we'd ship", '← yayınlayacağımız gerçek bir uygulama');
 
 // brand
 R('◇ 04 · brand explorations', '◇ 04 · marka denemeleri');
-R('>monogram · motion<', '>monogram · hareket<'); R('>app icon<', '>uygulama ikonu<'); R('>type · kinetic<', '>tipografi · kinetik<');
-R('>mark · orbit<', '>amblem · yörünge<'); R('>pixel system<', '>piksel sistemi<'); R('>wordmark · variable weight<', '>yazı logo · değişken kalınlık<');
-R('mobile web brand mobile web brand mobile web brand mobile web brand ', 'mobil web marka mobil web marka mobil web marka mobil web marka ');
+R('>monogram · construction<', '>monogram · yapım ızgarası<'); R('>app icon · 6 directions<', '>uygulama ikonu · 6 yön<'); R('>01 · gradient<', '>01 · gradyan<'); R('>02 · glass<', '>02 · cam<'); R('>03 · cursor<', '>03 · imleç<'); R('>04 · sticker<', '>04 · çıkartma<'); R('>05 · pixel<', '>05 · piksel<'); R('>06 · vector<', '>06 · vektör<');
+R('>mark · liquid<', '>amblem · akışkan<');
+R('>monogram · extrude<', '>monogram · derinlik<');
+R('>monogram · slice<', '>monogram · dilim<');
+R('>wordmark · kerning<', '>yazı logo · harf aralığı<');
+R('>Caveat · sketch<', '>Caveat · eskiz<');
+R('>wordmark · sketch → set<', '>yazı logo · eskizden fonta<');
+R('>wordmark · on a path<', '>yazı logo · yol üstünde<');
+R('>app icon · in context<', '>uygulama ikonu · ana ekranda<');
+R('<span>light</span><span>dark</span><span>tinted</span>', '<span>açık</span><span>koyu</span><span>renkli</span>');
+R('>app icon · iOS modes<', '>uygulama ikonu · iOS modları<');
+R('>type · elastic<', '>tipografi · esnek<');
+R('<small>we design</small>', '<small>tasarlıyoruz</small>');
+R('>apps</span><span style="--i:1">websites</span><span style="--i:2">brands</span><span style="--i:3">motion<', '>uygulama</span><span style="--i:1">web sitesi</span><span style="--i:2">marka</span><span style="--i:3">hareket<');
+R('>type · barrel<', '>tipografi · silindir<');
+R('>type · liquid fill<', '>tipografi · sıvı dolgu<');
+R('>pixel · stack<', '>piksel · istif<');
+R('>pixel · halftone<', '>piksel · raster<');
+R('>pixel · mascot<', '>piksel · maskot<');
+R('TANRIKULU.DEV · MOBILE · WEB · BRAND ·', 'TANRIKULU.DEV · MOBİL · WEB · MARKA ·');
+R('>mark · seal<', '>amblem · mühür<');
+R('>mark · pattern<', '>amblem · desen<'); 
+
 
 // process
 R('>how a project runs ↓<', '>bir proje nasıl ilerler ↓<');

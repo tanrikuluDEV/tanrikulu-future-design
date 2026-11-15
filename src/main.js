@@ -744,3 +744,64 @@ addEventListener('resize', () => {
     busy = false; form.elements.name.focus({ preventScroll: true });
   });
 })();
+
+// liquid glass dock: a displacement map shaped like the capsule bends whatever is behind its rim
+(function () {
+  const dock = document.getElementById('dock');
+  const chromium = !!navigator.userAgentData?.brands?.some((b) => /Chromium/.test(b.brand));
+  if (!dock || !chromium) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('aria-hidden', 'true'); svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  svg.innerHTML = '<filter id="lg" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">'
+    + '<feImage result="map" preserveAspectRatio="none"/>'
+    + '<feGaussianBlur in="SourceGraphic" stdDeviation="3" result="soft"/>'
+    + '<feDisplacementMap in="soft" in2="map" scale="90" xChannelSelector="R" yChannelSelector="G" result="bent"/>'
+    + '<feColorMatrix in="bent" type="saturate" values="1.5" result="sat"/><feComponentTransfer in="sat"><feFuncR type="linear" slope="1.03" intercept=".02"/><feFuncG type="linear" slope="1.03" intercept=".02"/><feFuncB type="linear" slope="1.03" intercept=".02"/></feComponentTransfer></filter>';
+  document.body.appendChild(svg);
+  const filter = svg.querySelector('filter'), img = svg.querySelector('feImage');
+  const cv = document.createElement('canvas'), cx = cv.getContext('2d');
+  let lastW = 0, lastH = 0;
+  function build() {
+    const W = Math.round(dock.offsetWidth), H = Math.round(dock.offsetHeight);
+    if (!W || !H || (W === lastW && H === lastH)) return; lastW = W; lastH = H;
+    cv.width = W; cv.height = H;
+    const d = cx.createImageData(W, H), R = H / 2, bezel = Math.min(22, R), hx = W / 2 - R, hy = H / 2 - R;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const px = x + .5 - W / 2, py = y + .5 - H / 2, qx = Math.abs(px) - hx, qy = Math.abs(py) - hy;
+      let nx, ny, dist; // dist: how far inside the edge; n: outward normal
+      if (qx > 0 && qy > 0) { const l = Math.hypot(qx, qy); dist = R - l; nx = qx / l * Math.sign(px); ny = qy / l * Math.sign(py); }
+      else if (qx > qy) { dist = R - qx; nx = Math.sign(px); ny = 0; } else { dist = R - qy; nx = 0; ny = Math.sign(py); }
+      const t = Math.max(0, Math.min(1, dist / bezel)), m = Math.pow(1 - t, 1.8); // strongest bend right at the rim
+      const i = (y * W + x) * 4;
+      d.data[i] = 128 - nx * m * 127; d.data[i + 1] = 128 - ny * m * 127; d.data[i + 2] = 128; d.data[i + 3] = 255;
+    }
+    cx.putImageData(d, 0, 0);
+    for (const [k, v] of [['x', 0], ['y', 0], ['width', W], ['height', H]]) { filter.setAttribute(k, v); img.setAttribute(k, v); }
+    img.setAttribute('href', cv.toDataURL());
+    document.documentElement.classList.add('lg-on');
+  }
+  new ResizeObserver(build).observe(dock); build();
+})();
+
+// brand explorations: each tile cycles through its slides, staggered so only one changes at a time
+(function () {
+  const tiles = [...document.querySelectorAll('.brand .tile')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const WIPES = ['wipeB', 'wipeR', 'wipeT', 'wipeL', 'wipeC'];
+  const HOLD = 7200;
+  tiles.forEach((tile, ti) => {
+    const slides = [...tile.querySelectorAll(':scope > .sl')];
+    let k = 0; slides[0]?.classList.add('on');
+    if (reduce || slides.length < 2) return;
+    const next = () => {
+      const a = slides[k]; k = (k + 1) % slides.length; const b = slides[k];
+      b.style.setProperty('--wipe', WIPES[(ti + k * 2) % WIPES.length]);
+      b.classList.add('in');
+      b.getAnimations({ subtree: true }).forEach((an) => { if (an.effect?.target !== b) an.currentTime = 0; });
+      setTimeout(() => { a.classList.remove('on'); b.classList.replace('in', 'on'); }, 800);
+      setTimeout(next, HOLD);
+    };
+    setTimeout(next, HOLD * .5 + ti * (HOLD / tiles.length));
+  });
+})();
