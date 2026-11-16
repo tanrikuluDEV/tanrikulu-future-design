@@ -15,8 +15,8 @@ const box = (el) => { // position in board coordinates (walks up to the world)
 const mobileMQ = matchMedia('(max-width: 760px)');
 let isMobile = mobileMQ.matches;
 const LAYOUT = {
-  desktop: { stops: [['home', 'f-hero'], ['services', 'f-svc'], ['app', 'f-phone'], ['brand', 'f-brand'], ['process', 'g-process'], ['contact', 'f-contact']], world: { x: -100, y: -100, w: 3040, h: 2750 } },
-  mobile: { stops: [['home', 'f-hero'], ['services', 'svc1'], ['services', 'svc2'], ['services', 'svc3'], ['app', 'f-phone'], ['brand', 'f-brand'], ['process', 'g-process'], ['contact', 'f-contact']], world: { x: -60, y: -120, w: 560, h: 6560 } },
+  desktop: { stops: [['home', 'f-hero'], ['services', 'f-svc'], ['app', 'f-phone'], ['brand', 'f-brand'], ['vibe', 'f-vibe'], ['process', 'g-process'], ['contact', 'f-contact']], world: { x: -100, y: -100, w: 3040, h: 2750 } },
+  mobile: { stops: [['home', 'f-hero'], ['services', 'svc1'], ['services', 'svc2'], ['services', 'svc3'], ['app', 'f-phone'], ['brand', 'f-brand'], ['vibe', 'f-vibe'], ['process', 'g-process'], ['contact', 'f-contact']], world: { x: -60, y: -120, w: 560, h: 7640 } },
 };
 let STOP_IDS, STOP_KEYS, N, LAST, WORLD;
 function setupLayout() {
@@ -177,7 +177,7 @@ const INK = () => isDark() ? [237, 235, 230] : [20, 20, 20];
 
 // arrows: through the process notes, then down to contact
 const arrows = document.getElementById('arrows');
-arrows.innerHTML = [[1910, 1640, 1990, 1660], [2220, 1660, 2300, 1630], [2530, 1630, 2610, 1670], [2720, 1820, 2440, 1980]].map(([a, b, c, d]) =>
+arrows.innerHTML = [[1910, 1640, 1990, 1660], [2220, 1660, 2300, 1630], [2530, 1630, 2610, 1670], [2720, 1820, 2440, 1980], [1450, 1620, 1660, 1640]].map(([a, b, c, d]) =>
   `<path d="M${a} ${b} C ${(a + c) / 2} ${b - 60}, ${(a + c) / 2} ${d - 60}, ${c} ${d}" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" marker-end="url(#h)"/>`).join('') +
   '<defs><marker id="h" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>';
 
@@ -873,4 +873,225 @@ addEventListener('resize', () => {
     };
     setTimeout(next, HOLD * .5 + ti * (HOLD / tiles.length));
   });
+})();
+
+// ---------- 05 vibe check: pick an app, mood, colour, shape and type → the app reskins live → send it as a brief ----------
+(function vibeCheck() {
+  const root = document.getElementById('vibe'); if (!root) return;
+  const frame = document.getElementById('f-vibe');
+  const rnd = (n) => Math.floor(Math.random() * n), any = (a) => a[rnd(a.length)];
+  const APPS = [['habit', tx('habits', 'alışkanlık')], ['music', tx('music', 'müzik')], ['money', tx('money', 'para')], ['food', tx('food', 'yemek')], ['mind', tx('mind', 'zihin')], ['travel', tx('travel', 'seyahat')], ['social', tx('social', 'sosyal')]];
+  const MOODS = [['calm', tx('calm', 'sakin')], ['bold', tx('bold', 'cesur')], ['play', tx('playful', 'oyuncu')]];
+  const COLS = [['#FF3D7F', tx('pink', 'pembe')], ['#2E5BFF', tx('blue', 'mavi')], ['#00B37A', tx('green', 'yeşil')], ['#FF9F1C', tx('amber', 'kehribar')], ['#8B3DFF', tx('violet', 'mor')]];
+  const SHAPES = [['sharp', tx('sharp', 'keskin'), 3], ['soft', tx('soft', 'yumuşak'), 14], ['round', tx('round', 'yuvarlak'), 30]];
+  const TYPES = [['grotesk', 'Grotesk', 'var(--sans)'], ['serif', 'Serif', "'Iowan Old Style', 'Palatino Linotype', Georgia, serif"], ['mono', 'Mono', 'var(--mono)'], ['hand', tx('Hand', 'El yazısı'), 'var(--hand)']];
+  const NAMES = { habit: ['Nook', 'Streak', 'Tidy', 'Ritu'], music: ['Hum', 'Loop', 'Vinyl', 'Echo'], money: ['Coin', 'Ledgr', 'Penny', 'Vault'], food: ['Yum', 'Bowl', 'Crumb', 'Fork'],
+    mind: ['Sola', 'Hush', 'Breeze', 'Still'], travel: ['Roam', 'Gate', 'Atlas', 'Nomad'], social: ['Bloop', 'Yay!', 'Circle', 'Zing'] };
+  const ICON_STYLES = [['grad', tx('gradient', 'gradyan')], ['duo', tx('duotone', 'çift ton')], ['geo', tx('geometric', 'geometrik')], ['orbit', tx('orbit', 'yörünge')], ['face', tx('mascot', 'maskot')],
+    ['pixel', tx('pixel', 'piksel')], ['stripe', tx('stripes', 'şerit')], ['glass', tx('glass', 'cam')], ['sticker', 'sticker'], ['letter', tx('monogram', 'harf')]];
+
+  // 24×24 stroke glyphs (f: filled)
+  const G = {
+    bolt: { d: 'M13 2L4 14h7l-1 8 9-12h-7z', f: 1 }, note: { d: 'M9 18V5l11-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM20 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z' },
+    trend: { d: 'M3 17l6-6 4 4 8-8M15 7h6v6' }, bowl: { d: 'M3 11h18a9 9 0 0 1-18 0zM8 7c0-2 2-2 2-4M13 7c0-2 2-2 2-4' }, moon: { d: 'M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6z', f: 1 },
+    plane: { d: 'M22 2L11 13M22 2l-7 20-4-9-9-4z' }, heart: { d: 'M12 20s-7-4.4-9.3-8.8A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.3 5.2C19 15.6 12 20 12 20z', f: 1 },
+    home: { d: 'M4 11l8-7 8 7v9H4z' }, search: { d: 'M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14zM21 21l-5-5' }, user: { d: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1-4 4-6 8-6s7 2 8 6' },
+    plus: { d: 'M12 5v14M5 12h14' }, chart: { d: 'M4 20V10M10 20V4M16 20v-7M22 20H2' }, play: { d: 'M7 4l13 8-13 8z', f: 1 }, prev: { d: 'M18 5L8 12l10 7zM5 5v14' }, next: { d: 'M6 5l10 7-10 7zM19 5v14' },
+    pin: { d: 'M12 21s-7-6.3-7-12a7 7 0 0 1 14 0c0 5.7-7 12-7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z' }, cup: { d: 'M4 8h13v5a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6zM17 9h2a3 3 0 0 1 0 6h-2' },
+    check: { d: 'M4 12l5 5L20 6' }, chat: { d: 'M4 5h16v11H9l-5 4z' }, leaf: { d: 'M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l8-8' }, card: { d: 'M3 6h18v12H3zM3 10h18' }, star: { d: 'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z', f: 1 },
+  };
+  const GLYPH = { habit: 'bolt', music: 'note', money: 'trend', food: 'bowl', mind: 'moon', travel: 'plane', social: 'heart' };
+  const svgI = (k, cls = '') => { const g = G[k]; return `<svg class="vi ${cls}" viewBox="0 0 24 24"${g.f ? ' data-f="1"' : ''}><path d="${g.d}"/></svg>`; };
+  const PIX = { // 7×7 pixel marks per app
+    habit: '0001100|0011000|0110000|1111110|0001100|0011000|0110000', music: '0001111|0001001|0001001|0001001|0111001|1111111|0110110', money: '0000111|0000011|0000101|0001000|1010000|1100000|1000000',
+    food: '0100100|0010010|0000000|1111111|1111111|0111110|0011100', mind: '0011100|0110000|1100000|1100000|1100001|0110011|0011110', travel: '0000011|0000110|1101100|0111000|0011100|0010110|0010011', social: '0110110|1111111|1111111|1111111|0111110|0011100|0001000' };
+
+  const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const toHex = (c) => '#' + c.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('').toUpperCase();
+  const mix = (a, b, t) => toHex(hex(a).map((v, i) => v + (hex(b)[i] - v) * t));
+
+  function iconSVG(style, app, acc, name, font) {
+    const dark = mix(acc, '#000000', .45), light = mix(acc, '#FFFFFF', .78), g = G[GLYPH[app]];
+    const glyph = (c, s = 2, x = 24, y = 24, sw = 2.3) => `<g transform="translate(${x} ${y}) scale(${s})" fill="${g.f ? c : 'none'}" stroke="${c}" stroke-width="${g.f ? 0 : sw}" stroke-linecap="round" stroke-linejoin="round"><path d="${g.d}"/></g>`;
+    let bg = '', fg = '', defs = '';
+    switch (style) {
+      case 'grad': defs = `<linearGradient id="vg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${light}"/><stop offset=".45" stop-color="${acc}"/><stop offset="1" stop-color="${dark}"/></linearGradient>`;
+        bg = 'url(#vg1)'; fg = glyph('#fff'); break;
+      case 'duo': bg = light; fg = `<rect x="0" y="48" width="96" height="48" fill="${acc}"/>` + glyph('#141414', 2, 27, 27) + glyph('#fff', 2, 24, 24); break;
+      case 'geo': bg = '#F4EFE6'; fg = `<circle cx="38" cy="40" r="22" fill="${acc}"/><rect x="44" y="44" width="34" height="34" rx="4" fill="#141414" transform="rotate(12 61 61)"/><path d="M14 82a20 20 0 0 1 40 0z" fill="#FFD84A"/><circle cx="72" cy="22" r="6" fill="${dark}"/>`; break;
+      case 'orbit': bg = '#101014'; fg = `<ellipse cx="48" cy="50" rx="36" ry="13" fill="none" stroke="${light}" stroke-opacity=".5" stroke-width="2.5" transform="rotate(-22 48 50)"/><circle cx="48" cy="48" r="17" fill="${acc}"/><path d="M14 63a36 13 -22 0 0 68 -28" fill="none" stroke="${light}" stroke-width="2.5" transform="rotate(0)"/><circle cx="80" cy="34" r="5" fill="#fff"/><circle cx="20" cy="22" r="1.6" fill="#fff"/><circle cx="74" cy="78" r="1.3" fill="#fff"/>`; break;
+      case 'face': bg = acc; fg = `<path d="M18 52c0-20 12-32 30-32s30 12 30 32-12 28-30 28-30-8-30-28z" fill="#fff"/><circle cx="38" cy="48" r="5" fill="#141414"/><circle cx="58" cy="48" r="5" fill="#141414"/><circle cx="40" cy="46" r="1.6" fill="#fff"/><circle cx="60" cy="46" r="1.6" fill="#fff"/><path d="M40 60q8 7 16 0" fill="none" stroke="#141414" stroke-width="3.5" stroke-linecap="round"/><circle cx="30" cy="58" r="4" fill="${light}"/><circle cx="66" cy="58" r="4" fill="${light}"/>`; break;
+      case 'pixel': bg = '#141414'; fg = PIX[app].split('|').map((row, y) => [...row].map((v, x) => v === '1' ? `<rect x="${17 + x * 9}" y="${17 + y * 9}" width="8" height="8" rx="1.5" fill="${(x + y) % 3 ? acc : light}"/>` : '').join('')).join(''); break;
+      case 'stripe': defs = `<pattern id="vp1" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="14" fill="${acc}"/><rect x="7" width="7" height="14" fill="${dark}"/></pattern>`;
+        bg = 'url(#vp1)'; fg = `<circle cx="48" cy="48" r="27" fill="#fff"/>` + glyph(acc, 1.5, 30, 30); break;
+      case 'glass': bg = '#EDEAF6'; fg = `<circle cx="30" cy="34" r="22" fill="${acc}"/><circle cx="68" cy="64" r="24" fill="#FFD84A"/><circle cx="66" cy="26" r="12" fill="${dark}"/><rect x="18" y="18" width="60" height="60" rx="18" fill="#fff" fill-opacity=".42" stroke="#fff" stroke-opacity=".9" stroke-width="1.5"/>` + glyph('#141414', 1.5, 30, 30); break;
+      case 'sticker': bg = '#FFD84A'; fg = `<g transform="rotate(-8 48 48)"><rect x="17" y="17" width="62" height="62" rx="20" fill="#141414" transform="translate(4 4)"/><rect x="17" y="17" width="62" height="62" rx="20" fill="#fff" stroke="#141414" stroke-width="3.5"/>` + glyph(acc, 1.6, 29, 29) + '</g>'; break;
+      default: bg = acc; fg = `<text x="48" y="50" text-anchor="middle" dominant-baseline="central" font-size="${font.includes('hand') ? 66 : 54}" font-weight="800" fill="#fff" style="font-family:${font.replace(/"/g, "'")}">${name[0]}</text><circle cx="${font.includes('hand') ? 74 : 72}" cy="66" r="6" fill="#FFD84A"/>`;
+    }
+    return `<svg viewBox="0 0 96 96"><defs>${defs}<clipPath id="vclip"><rect width="96" height="96" rx="24"/></clipPath></defs><g clip-path="url(#vclip)"><rect width="96" height="96" fill="${bg}"/>${fg}</g></svg>`;
+  }
+
+  // generative cover art (album / post / promo)
+  const art = (acc, card) => { const a = rnd(360), x = 20 + rnd(60), y = 20 + rnd(60), d = mix(acc, '#000000', .4);
+    return `background:radial-gradient(circle at ${x}% ${y}%, ${card} 0 18%, transparent 19%), radial-gradient(circle at ${100 - x}% ${100 - y}%, #FFD84A 0 9%, transparent 10%), conic-gradient(from ${a}deg at 50% 60%, ${acc}, ${d}, ${acc}, ${mix(acc, '#FFFFFF', .5)}, ${acc})`; };
+
+  const T = (en, tr) => tx(en, tr);
+  const tabs = (keys) => `<nav class="vb-tab">${keys.map((k, i) => `<span class="${i ? '' : 'on'}">${svgI(k)}</span>`).join('')}</nav>`;
+  const hd = (sub, name, right) => `<header class="vb-hd p" style="--i:0"><div><small>${sub}</small><h4 class="vb-name">${name}</h4></div>${right}</header>`;
+  const SCREENS = {
+    habit: (n) => hd(T('Good morning', 'Günaydın'), n, `<span class="vb-av">${n[0]}</span>`) +
+      `<div class="vb-hero p" style="--i:1"><small>${T('This week', 'Bu hafta')}</small><b>72<sup>%</sup></b><span>${T('of your goal', 'hedefinin')}</span><svg class="vb-ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18"/><circle class="on" cx="22" cy="22" r="18" pathLength="100"/></svg></div>
+      <div class="vb-chips p" style="--i:2"><span class="on">${T('All', 'Tümü')}</span><span>${T('Today', 'Bugün')}</span><span>${T('Saved', 'Kayıtlı')}</span></div>
+      <div class="vb-row p" style="--i:3"><i>${svgI('check')}</i><div><b>${T('Morning flow', 'Sabah akışı')}</b><small>12 min · 🔥 9</small></div><em>›</em></div>
+      <div class="vb-row p" style="--i:4"><i>${svgI('leaf')}</i><div><b>${T('Deep work', 'Odak zamanı')}</b><small>45 min</small></div><em>›</em></div>
+      <button type="button" tabindex="-1" class="vb-cta p" style="--i:5">${T('Get started', 'Başla')}</button>` + tabs(['home', 'chart', 'plus', 'user']),
+    music: (n, P) => hd(T('Now playing', 'Şimdi çalıyor'), n, `<span class="vb-av">${svgI('heart')}</span>`) +
+      `<div class="vb-art big p" style="--i:1;${art(P.acc0, P.card)}"></div>
+      <div class="vb-track p" style="--i:2"><b>${T('Midnight Drive', 'Gece Yolu')}</b><small>The Lumen · 3:42</small></div>
+      <div class="vb-wave p" style="--i:3">${Array.from({ length: 30 }, (_, i) => `<i style="--h:${20 + Math.round(Math.abs(Math.sin(i * 1.7) * 70 + Math.cos(i * .6) * 20))}%;--d:${(i % 7) * -.13}s" class="${i < 12 ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="vb-ctrl p" style="--i:4">${svgI('prev')}<b>${svgI('play')}</b>${svgI('next')}</div>` + tabs(['home', 'search', 'note', 'user']),
+    money: (n, P) => hd(T('Total balance', 'Toplam bakiye'), n, `<span class="vb-av">${svgI('plus')}</span>`) +
+      `<div class="vb-cc p" style="--i:1"><small>${n}</small><b>₺24,180</b><span>•••• 4021</span><i></i></div>
+      <div class="vb-bars p" style="--i:2">${[38, 62, 45, 80, 55, 92, 68].map((h, i) => `<i style="--h:${h}%" class="${i === 5 ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="vb-row p" style="--i:3"><i>${svgI('cup')}</i><div><b>${T('Coffee', 'Kahve')}</b><small>${T('Today', 'Bugün')} · 08:40</small></div><em>-₺85</em></div>
+      <div class="vb-row p" style="--i:4"><i>${svgI('trend')}</i><div><b>${T('Salary', 'Maaş')}</b><small>${T('Yesterday', 'Dün')}</small></div><em class="up">+₺42k</em></div>` + tabs(['home', 'card', 'chart', 'user']),
+    food: (n, P) => hd(T('Deliver to · Home', 'Teslimat · Ev'), n, `<span class="vb-av">${svgI('bowl')}</span>`) +
+      `<div class="vb-search p" style="--i:1">${svgI('search')}<span>${T('Ramen, salad, pizza…', 'Ramen, salata, pizza…')}</span></div>
+      <div class="vb-cats p" style="--i:2">${[['🍜', 'Ramen'], ['🥗', T('Salad', 'Salata')], ['🍕', 'Pizza'], ['🍣', 'Sushi']].map(([e, t]) => `<span><i>${e}</i><small>${t}</small></span>`).join('')}</div>
+      <div class="vb-promo p" style="--i:3;${art(P.acc0, P.card)}"><small>${T('Today only', 'Sadece bugün')}</small><b>-30%</b><em>🥡</em></div>
+      <div class="vb-row p" style="--i:4"><i>${svgI('star')}</i><div><b>Noodle Bar</b><small>★ 4.8 · 20 min</small></div><em>›</em></div>` + tabs(['home', 'search', 'heart', 'user']),
+    mind: (n) => hd(T('Evening session', 'Akşam seansı'), n, `<span class="vb-av">${svgI('moon')}</span>`) +
+      `<div class="vb-breath p" style="--i:1"><i></i><i></i><i></i><b>${T('Breathe in', 'Nefes al')}</b><small>04:00</small></div>
+      <div class="vb-chips p" style="--i:2"><span class="on">${T('Sleep', 'Uyku')}</span><span>${T('Focus', 'Odak')}</span><span>${T('Calm', 'Sakinlik')}</span></div>
+      <button type="button" tabindex="-1" class="vb-cta p" style="--i:3">${T('Start session', 'Seansı başlat')}</button>` + tabs(['home', 'moon', 'chart', 'user']),
+    travel: (n) => hd(T('Next trip · 3 days', 'Sonraki yolculuk · 3 gün'), n, `<span class="vb-av">${svgI('pin')}</span>`) +
+      `<div class="vb-map p" style="--i:1"><svg viewBox="0 0 240 140" preserveAspectRatio="none"><path class="rt" d="M30 110 C 70 30, 150 120, 210 30"/></svg><span class="pa">${svgI('pin')}</span><span class="pb">${svgI('pin')}</span></div>
+      <div class="vb-pass p" style="--i:2"><div><b>IST</b><small>İstanbul</small></div>${svgI('plane')}<div><b>LIS</b><small>Lisboa</small></div><footer><span>${T('Gate', 'Kapı')} B12</span><span>09:40</span><span>${T('Seat', 'Koltuk')} 14A</span></footer></div>
+      <button type="button" tabindex="-1" class="vb-cta p" style="--i:3">${T('Check in', 'Check-in yap')}</button>` + tabs(['home', 'search', 'plane', 'user']),
+    social: (n, P) => hd(T('For you', 'Senin için'), n, `<span class="vb-av">${svgI('chat')}</span>`) +
+      `<div class="vb-stories p" style="--i:1">${['A', 'M', 'E', 'K', 'S'].map((l, i) => `<span class="${i ? '' : 'me'}"><i>${i ? l : '+'}</i></span>`).join('')}</div>
+      <div class="vb-post p" style="--i:2"><header><i></i><b>studio.lumen</b><small>2m</small></header><div class="vb-art" style="${art(P.acc0, P.card)}"></div><footer>${svgI('heart', 'lk')}<b>2,481</b>${svgI('chat')}<b>96</b></footer></div>` + tabs(['home', 'search', 'plus', 'user']),
+  };
+
+  const st = { app: 0, mood: 'calm', col: 0, shape: 1, type: 0, icon: 0, name: 'Nook' };
+  const group = (key, label, items, render) => `<div class="vb-g"><span class="vb-l">${label}</span><div class="vb-opts" data-k="${key}">${items.map((it, i) => `<button type="button" data-v="${i}" aria-pressed="false">${render(it, i)}</button>`).join('')}</div></div>`;
+  root.innerHTML = `
+    <div class="vb-ctl">
+      <span class="vb-kick">${tx('step 0 · before the kickoff call', 'adım 0 · tanışma görüşmesinden önce')}</span>
+      <h2>${tx('Pick a vibe.<br>We’ll dress the app.', 'Bir vibe seç,<br>uygulamayı giydirelim.')}</h2>
+      ${group('app', tx('app', 'uygulama'), APPS, (a) => a[1])}
+      ${group('mood', tx('mood', 'ruh hali'), MOODS, (m) => m[1])}
+      ${group('col', tx('colour', 'renk'), COLS, (c) => `<i style="background:${c[0]}"></i><span class="vb-sr">${c[1]}</span>`)}
+      ${group('shape', tx('corners', 'köşeler'), SHAPES, (s) => `<b style="border-radius:${Math.round(s[2] / 3)}px"></b>${s[1]}`)}
+      ${group('type', tx('type', 'yazı'), TYPES, (t) => `<span style="font-family:${t[2]}">${t[1]}</span>`)}
+      <div class="vb-foot"><button type="button" class="vb-dice" aria-label="${tx('Shuffle', 'Karıştır')}">🎲 ${tx('shuffle', 'karıştır')}</button><button type="button" class="vb-send">${tx('Send as brief →', 'Brief olarak gönder →')}</button></div>
+      <code class="vb-spec" aria-live="polite"></code>
+    </div>
+    <div class="vb-stage">
+      <div class="vb-side vb-left">
+        <button type="button" class="vb-card vb-iconc" aria-label="${tx('Next icon style', 'Sonraki ikon stili')}"><span class="vb-cap"><span class="vb-ist"></span><em>↻</em></span><div class="vb-icon"></div></button>
+        <div class="vb-card vb-typec"><span class="vb-cap">${tx('typeface', 'yazı tipi')}</span><b class="vb-aa">Aa</b><small class="vb-tn"></small></div>
+      </div>
+      <div class="vb-phone" aria-hidden="true"><div class="vb-app">
+        <div class="vb-deco"><i class="d1"></i><i class="d2"></i><svg class="d3" viewBox="0 0 120 40"><path d="M4 30 Q 19 2 34 22 T 64 22 T 94 22 T 116 12"/></svg></div>
+        <div class="vb-sb"><b>9:41</b><span></span></div>
+        <div class="vb-scr"></div>
+        <i class="vb-sheen"></i>
+      </div></div>
+      <div class="vb-side vb-right">
+        <div class="vb-card vb-pal"><span class="vb-cap">${tx('palette', 'palet')}</span><div class="vb-sw"></div></div>
+        <div class="vb-card vb-btnc"><span class="vb-cap">${tx('button', 'buton')}</span><span class="vb-b1">${tx('Continue', 'Devam')}</span><span class="vb-b2">${tx('Later', 'Sonra')}</span></div>
+      </div>
+    </div>`;
+
+  const app = root.querySelector('.vb-app'), scr = root.querySelector('.vb-scr'), stage = root.querySelector('.vb-stage'), spec = root.querySelector('.vb-spec');
+  let P = {};
+  function palette() {
+    const acc = COLS[st.col][0], m = st.mood;
+    P = m === 'calm' ? { bg: mix(acc, '#FFFFFF', .9), surf: '#FFFFFF', ink: '#1E2126', soft: mix('#1E2126', '#FFFFFF', .45), card: mix(acc, '#FFFFFF', .72), cink: '#1E2126', acc, aink: '#FFFFFF', w: 560, tr: '-.01em' }
+      : m === 'bold' ? { bg: '#0F0F10', surf: '#1D1D20', ink: '#FFFFFF', soft: '#8E8E93', card: acc, cink: '#FFFFFF', acc, aink: '#FFFFFF', w: 850, tr: '-.045em' }
+      : { bg: acc, surf: '#FFFFFF', ink: '#141414', soft: '#6B6B6B', card: st.col === 3 ? '#A6E3FF' : '#FFD84A', cink: '#141414', acc: '#141414', aink: '#FFFFFF', w: 750, tr: '-.025em' };
+    P.acc0 = acc;
+  }
+  function paint(rebuild) {
+    palette();
+    const acc = P.acc0, r = SHAPES[st.shape][2], f = TYPES[st.type][2], scale = st.type === 3 ? 1.25 : st.type === 2 ? .88 : 1;
+    const vars = { '--vbg': P.bg, '--vsurf': P.surf, '--vink': P.ink, '--vsoft': P.soft, '--vcard': P.card, '--vcink': P.cink, '--vacc': P.acc, '--vaink': P.aink, '--vtrue': acc, '--vw': P.w, '--vtr': P.tr, '--vr': r + 'px', '--vf': f, '--vfs': scale };
+    for (const k in vars) stage.style.setProperty(k, vars[k]);
+    app.dataset.mood = st.mood; stage.dataset.mood = st.mood;
+    const name = st.mood === 'bold' ? st.name.toUpperCase() : st.name, key = APPS[st.app][0];
+    if (rebuild) { scr.innerHTML = SCREENS[key](name, P); app.dataset.app = key; }
+    else scr.querySelectorAll('.vb-name').forEach((e) => e.textContent = name);
+    root.querySelector('.vb-icon').innerHTML = iconSVG(ICON_STYLES[st.icon][0], key, acc, st.name, f);
+    root.querySelector('.vb-ist').textContent = tx('app icon · ', 'ikon · ') + ICON_STYLES[st.icon][1];
+    root.querySelector('.vb-tn').textContent = TYPES[st.type][1] + ' · ' + P.w;
+    root.querySelector('.vb-sw').innerHTML = [acc, P.bg, P.card, P.ink].map((c) => `<span><i style="background:${c}"></i><code>${c}</code></span>`).join('');
+    root.querySelectorAll('.vb-opts').forEach((g) => { const k = g.dataset.k, cur = k === 'mood' ? MOODS.findIndex((x) => x[0] === st.mood) : st[k];
+      g.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i === cur); b.setAttribute('aria-pressed', i === cur); }); });
+    spec.textContent = `${APPS[st.app][1]} · ${MOODS.find((x) => x[0] === st.mood)[1]} · ${acc} · ${SHAPES[st.shape][1]} · ${TYPES[st.type][1]} · ${ICON_STYLES[st.icon][1]} → “${name}”`;
+  }
+  function reskin() { // stagger the screen's parts back in, run a sheen across the glass, pop the icon
+    if (reduce) return;
+    app.classList.remove('go'); void app.offsetWidth; app.classList.add('go');
+    const ic = root.querySelector('.vb-icon'); ic.classList.remove('go'); void ic.offsetWidth; ic.classList.add('go');
+  }
+  const newName = () => { const k = APPS[st.app][0]; let n; do n = any(NAMES[k]); while (n === st.name && NAMES[k].length > 1); st.name = n; };
+  function pick(k, i) {
+    let rebuild = false;
+    if (k === 'mood') st.mood = MOODS[i][0];
+    else if (k === 'app') { if (st.app !== i) { st.app = i; newName(); st.icon = rnd(ICON_STYLES.length); } rebuild = true; }
+    else st[k] = i;
+    if (k === 'col') rebuild = true; // re-roll the generative artwork
+    paint(rebuild); reskin();
+  }
+  function shuffle() {
+    st.app = rnd(APPS.length); st.mood = MOODS[rnd(3)][0]; st.col = rnd(COLS.length); st.shape = rnd(3); st.type = rnd(TYPES.length);
+    let ic; do ic = rnd(ICON_STYLES.length); while (ic === st.icon); st.icon = ic; newName();
+    paint(true); reskin();
+  }
+  let userTouched = false;
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return; e.stopPropagation();
+    if (e.isTrusted) userTouched = true;
+    const g = b.closest('.vb-opts');
+    if (g) pick(g.dataset.k, +b.dataset.v);
+    else if (b.classList.contains('vb-iconc')) { st.icon = (st.icon + 1) % ICON_STYLES.length; paint(); reskin(); }
+    else if (b.classList.contains('vb-dice')) shuffle();
+    else if (b.classList.contains('vb-send')) {
+      const ta = document.querySelector('#brief textarea');
+      ta.value = tx(`Vibe check → ${spec.textContent}\n\nWhat we're building: `, `Vibe testi → ${spec.textContent}\n\nNe yapıyoruz: `);
+      goStop(keyIndex('contact'));
+      setTimeout(() => { try { ta.focus({ preventScroll: true }); ta.setSelectionRange(ta.value.length, ta.value.length); } catch {} }, 1400);
+    }
+  });
+  paint(true);
+
+  // until someone touches it, a "you?" cursor plays with the controls whenever the frame is on screen
+  const ghost = document.createElement('div'); ghost.className = 'mcur vcur'; ghost.setAttribute('aria-hidden', 'true');
+  ghost.innerHTML = `<svg width="22" height="26" viewBox="0 0 18 22"><path d="M1 1l16 9-7 2-3 8z" fill="#FF3D7F" stroke="#fff" stroke-width="1.4"/></svg><span style="background:#FF3D7F">${tx('you?', 'sen?')}</span>`;
+  frame.appendChild(ghost);
+  let gx = frame.offsetWidth * .5, gy = frame.offsetHeight + 40;
+  ghost.style.transform = `translate(${gx}px,${gy}px)`;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const glide = (x, y, dur) => new Promise((res) => { const x0 = gx, y0 = gy, t0 = performance.now();
+    (function f(now) { const k = Math.min(1, (now - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2;
+      gx = x0 + (x - x0) * e; gy = y0 + (y - y0) * e; ghost.style.transform = `translate(${gx}px,${gy}px)`; k < 1 ? requestAnimationFrame(f) : res(); })(t0); });
+  const SEQ = [['app', 1], ['mood', 1], ['icon'], ['col', 1], ['app', 3], ['mood', 2], ['type', 3], ['icon'], ['app', 5], ['mood', 0], ['shape', 2], ['dice'], ['app', 6], ['col', 4], ['icon'], ['app', 2], ['mood', 1], ['type', 1], ['dice'], ['app', 4], ['mood', 0], ['icon'], ['app', 0]];
+  let si = 0;
+  (async function demo() {
+    if (reduce) return;
+    for (;;) {
+      await wait(1600);
+      if (userTouched) { ghost.style.opacity = 0; return; }
+      if (!frame.classList.contains('sel') || document.hidden) continue;
+      const [k, v] = SEQ[si++ % SEQ.length];
+      const btn = k === 'dice' ? root.querySelector('.vb-dice') : k === 'icon' ? root.querySelector('.vb-iconc') : root.querySelector(`.vb-opts[data-k="${k}"] button[data-v="${v}"]`);
+      if (!btn || !btn.offsetParent) continue; // the icon card is hidden on phones
+      const fr = frame.getBoundingClientRect(), br = btn.getBoundingClientRect(), z = fr.width / frame.offsetWidth || 1;
+      await glide((br.left - fr.left + br.width * .55) / z, (br.top - fr.top + br.height * .6) / z, 750);
+      if (userTouched) { ghost.style.opacity = 0; return; }
+      ghost.classList.add('press'); await wait(130); ghost.classList.remove('press');
+      if (k === 'dice') shuffle(); else if (k === 'icon') { st.icon = (st.icon + 1) % ICON_STYLES.length; paint(); reskin(); } else pick(k, v);
+    }
+  })();
 })();

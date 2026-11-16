@@ -116,7 +116,8 @@ R('Build with a preview link for every change.', 'Her değişikliği önizleme l
 R('Launch &amp; stick around.', 'Yayına alırız ve yanınızda kalırız.');
 
 // contact
-R('◇ 06 · contact', '◇ 06 · iletişim');
+R('◇ 07 · contact', '◇ 07 · iletişim');
+R('◇ 05 · vibe check', '◇ 05 · vibe testi'); R("try it, it's live ↓", 'dene, canlı ↓');
 R('<h2>Leave a note on the board.</h2>', '<h2>Panoya bir not bırak.</h2>');
 R('placeholder="Your name" aria-label="Your name"', 'placeholder="Adın" aria-label="Adın"');
 R('placeholder="Email" aria-label="Email"', 'placeholder="E-posta" aria-label="E-posta"');
