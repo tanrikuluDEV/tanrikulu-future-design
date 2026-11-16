@@ -544,6 +544,19 @@ svg.arrows { position: absolute; left: 0; top: 0; overflow: visible; pointer-eve
 .hstamp { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 20px 9px; border: 3px solid var(--grn); border-radius: 14px; color: var(--grn); background: rgba(0,179,122,.06); box-shadow: inset 0 0 0 3px var(--paper-2), inset 0 0 0 4.5px rgba(0,179,122,.5); opacity: 0; }
 .hstamp b { font: 900 32px/1 var(--sans); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
 .hstamp small { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+.hrw { opacity: 0; min-width: 300px; padding: 10px; background: var(--paper); border-radius: 16px; box-shadow: 0 24px 40px -18px var(--shade), 0 0 0 1px var(--ring); }
+.hrw-h { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px 8px; font: 600 13px var(--mono); color: var(--sel); letter-spacing: .02em; }
+.hrw-h small { font: 500 11px var(--mono); color: var(--soft); background: var(--well); border-radius: 99px; padding: 1px 7px; }
+.hrw ul { list-style: none; margin: 0; padding: 0; }
+.hrw li { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 10px 12px; border-radius: 11px; font-size: 26px; font-weight: 600; font-style: italic; letter-spacing: -.02em; color: var(--ink); transition: background .18s, color .18s; }
+.hrw li kbd { font: 500 11px var(--mono); font-style: normal; color: var(--soft); opacity: 0; transition: opacity .18s; }
+.hrw li.on { background: rgba(46,91,255,.12); }
+.hrw li.on kbd { opacity: 1; }
+.hrw li.go { background: var(--sel); color: #fff; }
+.hrw li.go kbd { color: rgba(255,255,255,.8); opacity: 1; }
+.hw .lt { display: inline-block; transform-origin: 50% 80%; }
+.hw .old { position: absolute; left: 0; top: 0; pointer-events: none; }
+.hspark { position: absolute; left: 0; top: 0; width: 10px; height: 10px; border-radius: 3px; z-index: 3; pointer-events: none; }
 .hsw { display: flex; gap: 10px; padding: 10px 12px; background: var(--paper); border-radius: 14px; box-shadow: 0 20px 30px -16px var(--shade), 0 0 0 1px var(--ring); }
 .hsw i { width: 30px; height: 30px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.2); transition: transform .2s, box-shadow .2s; }
 .hsw i.pick { transform: scale(1.18); box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px #FF3D7F; }
@@ -570,6 +583,7 @@ svg.arrows { position: absolute; left: 0; top: 0; overflow: visible; pointer-eve
   .hp .caret { width: 4px; height: 40px; }
   .hguide { left: 59px; top: 210px; height: 560px; width: 3px; }
   .hcom p { font-size: 32px; padding: 16px 24px; } .hcom small { font-size: 18px; } .hcom p em { font-size: 18px; } .hcom > span { width: 56px; height: 56px; font-size: 24px; }
+  .hrw { min-width: 380px; padding: 12px; border-radius: 24px; } .hrw-h { font-size: 20px; padding: 6px 12px 12px; } .hrw-h small { font-size: 18px; } .hrw li { font-size: 34px; padding: 14px 16px; border-radius: 16px; } .hrw li kbd { font-size: 18px; }
   .hsw { gap: 16px; padding: 16px 18px; border-radius: 22px; } .hsw i { width: 50px; height: 50px; }
   .hcur svg { width: 40px; height: 48px; } .hcur span { left: 30px; top: 40px; font-size: 24px; padding: 6px 14px; }
   .hsel { border-width: 4px; } .hsel i { width: 20px; height: 20px; } .hsel i:nth-child(1), .hsel i:nth-child(3) { left: -12px; } .hsel i:nth-child(2), .hsel i:nth-child(4) { right: -12px; }

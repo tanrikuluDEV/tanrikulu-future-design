@@ -305,7 +305,7 @@ setInterval(() => { if (!reduce && performance.now() > aPausedUntil) aShow((aIdx
 (function hero() {
   const $ = (id) => document.getElementById(id);
   const W1 = $('w1'), W2 = $('w2'), W3 = $('w3'), W4 = $('w4'), HP = $('hp'), PILL = $('hpill'), BADGE = $('hbadge'), ICON = $('hicon'), COM = $('hcom'), SW = $('hsw');
-  const CL = $('hc4'), STAMP = $('hstamp'), COMAV = $('hcomav'), COMBY = $('hcomby'), COMTX = $('hcomtx');
+  const RW = $('hrw'), RWL = $('hrwl'), CL = $('hc4'), STAMP = $('hstamp'), COMAV = $('hcomav'), COMBY = $('hcomby'), COMTX = $('hcomtx');
   const C = [$('hc1'), $('hc2'), $('hc3')], SEL = [$('hs1'), $('hs2'), $('hs3')], guide = $('hguide'), typed = $('hptext');
   const PARA = tx('An independent studio. This board is our actual workspace — wander around, everything is live.', 'Bağımsız bir stüdyoyuz. Bu pano gerçek çalışma alanımız; gez, dolaş, her şey canlı.');
   const W4TXT = W4.textContent, CLIENT = tx('Aden · client', 'Aden · müşteri');
@@ -379,7 +379,7 @@ setInterval(() => { if (!reduce && performance.now() > aPausedUntil) aShow((aIdx
     set(W4, { ...sc.w4, c: 0, ca: null, cb: [255, 61, 127], o: 1 });
     set(PILL, { ...sc.pill, o: 1 }); set(BADGE, { ...sc.badge, o: 1 }); set(ICON, { ...sc.icon, o: 1 });
     set(HP, { ...Q.hp, s: 1, r: 0, o: 0 }); typed.textContent = '';
-    set(COM, { ...Q.com, s: .6, r: 0, o: 0 }); set(SW, { x: 0, y: 0, s: .8, r: 0, o: 0 });
+    set(COM, { ...Q.com, s: .6, r: 0, o: 0 }); set(RW, { x: 0, y: 0, s: .9, r: 0, o: 0 }); set(SW, { x: 0, y: 0, s: .8, r: 0, o: 0 });
     SW.querySelectorAll('i').forEach((i) => i.classList.remove('pick'));
   }
   function placeCursors() { C.forEach((c, i) => set(c, { x: Q.cur0[i][0], y: Q.cur0[i][1] })); set(CL, { x: Q.cl0[0], y: Q.cl0[1] }); }
@@ -411,15 +411,84 @@ setInterval(() => { if (!reduce && performance.now() > aPausedUntil) aShow((aIdx
     const sw = SW.querySelectorAll('i')[idx], r1 = SW.getBoundingClientRect(), r2 = sw.getBoundingClientRect(), z = r1.width / SW.offsetWidth;
     await moveTo(cur, x + (r2.left - r1.left + r2.width / 2) / z, y + (r2.top - r1.top + r2.height / 2) / z, 600); await click(cur); sw.classList.add('pick');
   }
-  // a: the client wants another word
+  // a: the client wants another word → dev opens a rewrite menu, previews options live, then swaps the letters
+  const GLY = tx('abcdefghijklmnopqrstuvwxyz', 'abcçdefgğhıijklmnoöprsştuüvyz');
+  const scramble = (to, dur) => new Promise((res) => {
+    if (reduce) { W4.textContent = to; return res(); }
+    const t0 = performance.now();
+    (function f(now) { const k = Math.min(1, (now - t0) / dur), fixed = Math.floor(k * to.length);
+      W4.textContent = [...to].map((ch, i) => i < fixed || ch === '.' ? ch : GLY[Math.floor(Math.random() * GLY.length)]).join('');
+      k < 1 ? requestAnimationFrame(f) : res(); })(t0);
+  });
+  const letters = (t) => [...t].map((ch) => `<span class="lt">${ch}</span>`).join('');
+  function burst(x, y, n, spread) {
+    const cols = ['#FF3D7F', '#FFD84A', '#2E5BFF', '#00B37A', '#FF8A3D'], stage = W4.parentNode;
+    for (let i = 0; i < n; i++) {
+      const p = document.createElement('i'); p.className = 'hspark'; p.style.background = cols[i % cols.length]; stage.appendChild(p);
+      const a = Math.random() * Math.PI * 2, r = spread * (.5 + Math.random() * .7), dx = Math.cos(a) * r, dy = Math.sin(a) * r - spread * .3;
+      p.animate([{ transform: `translate(${x}px,${y}px) scale(.4) rotate(0)`, opacity: 1 },
+        { transform: `translate(${x + dx}px,${y + dy}px) scale(1) rotate(${200 + Math.random() * 260}deg)`, opacity: 1, offset: .55 },
+        { transform: `translate(${x + dx * 1.15}px,${y + dy + spread * .6}px) scale(.6) rotate(420deg)`, opacity: 0 }],
+        { duration: 900 + Math.random() * 400, easing: 'cubic-bezier(.2,.7,.3,1)' }).finished.then(() => p.remove());
+    }
+  }
+  async function swapLetters(from, to) {
+    if (reduce) { W4.textContent = to; return; }
+    // the old word stays as a ghost layer whose letters fall off; the new one is laid out underneath
+    W4.innerHTML = `<span class="old">${letters(from)}</span>${letters(to)}`;
+    const olds = W4.querySelectorAll('.old .lt'), news = W4.querySelectorAll(':scope > .lt');
+    news.forEach((l) => l.style.opacity = 0);
+    const fall = [...olds].map((l, i) => l.animate([
+      { transform: 'translate(0,0) rotate(0)', opacity: 1 },
+      { transform: `translate(${(Math.random() - .5) * 30}px,-${14 + Math.random() * 16}px) rotate(${(Math.random() - .5) * 20}deg)`, opacity: 1, offset: .22 },
+      { transform: `translate(${(Math.random() - .5) * 140}px,${320 + Math.random() * 120}px) rotate(${(Math.random() - .5) * 220}deg)`, opacity: 0 }],
+      { duration: 900, delay: i * 45, easing: 'cubic-bezier(.45,0,.85,.5)', fill: 'forwards' }).finished);
+    await sleep(200);
+    const rise = [...news].map((l, i) => l.animate([
+      { transform: 'translateY(-110px) scale(.3) rotate(-24deg)', opacity: 0 },
+      { transform: 'translateY(14px) scale(1.12, .86) rotate(4deg)', opacity: 1, offset: .6 },
+      { transform: 'translateY(-6px) scale(.96, 1.05) rotate(-1deg)', opacity: 1, offset: .8 },
+      { transform: 'none', opacity: 1 }],
+      { duration: 620, delay: i * 60, easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'backwards' }).finished.then(() => l.style.opacity = ''));
+    await Promise.all(fall.concat(rise));
+    W4.textContent = to;
+  }
+  async function lockIn(word) {
+    if (reduce) return;
+    W4.innerHTML = letters(word);
+    const b = box(W4);
+    burst(b.x + b.w * .5, b.y + b.h * .45, 18, 170);
+    await Promise.all([...W4.querySelectorAll('.lt')].map((l, i) => l.animate([
+      { transform: 'none' }, { transform: 'translateY(8px) scale(1.1,.88)', offset: .18 },
+      { transform: 'translateY(-34px) scale(.92,1.1) rotate(-6deg)', offset: .5 },
+      { transform: 'translateY(4px) scale(1.06,.94)', offset: .78 }, { transform: 'none' }],
+      { duration: 560, delay: i * 50, easing: 'ease-in-out' }).finished));
+    W4.textContent = word;
+  }
   async function rWord(n) {
-    const word = tx(['love.', 'trust.', 'touch.'], ['deneyimler.', 'ürünler.', 'arayüzler.'])[n % 3], d = C[1];
+    const words = tx(['love.', 'trust.', 'touch.'], ['deneyimler.', 'ürünler.', 'arayüzler.']), word = words[n % 3], d = C[1];
+    const opts = [words[(n + 1) % 3], words[(n + 2) % 3], word];
     await say(CL, 'A', '#FF8A3D', CLIENT, tx(`what if "${W4TXT}" → "${word}"? 🤔`, `"${W4TXT}" yerine "${word}" mi? 🤔`), W4);
-    const b = box(W4); await moveTo(d, b.x + b.w * .5, b.y + b.h * .55, 700); await click(d); await sleep(90); await click(d);
-    selOf[1] = W4; labelOf[1] = tx('editing text', 'metin düzenleniyor'); W4.classList.add('hl'); await sleep(450);
-    W4.classList.remove('hl'); W4.textContent = '';
-    for (let i = 1; i <= word.length; i++) { W4.textContent = word.slice(0, i); const q = box(W4); set(d, { x: q.x + q.w + 4, y: q.y + q.h * .6 }); await sleep(110); }
-    await sleep(400); selOf[1] = null; labelOf[1] = '';
+    let b = box(W4); await moveTo(d, b.x + b.w * .5, b.y + b.h * .55, 700); await click(d); await sleep(90); await click(d);
+    selOf[1] = W4; labelOf[1] = tx('editing text', 'metin düzenleniyor'); W4.classList.add('hl'); await sleep(350);
+    // rewrite menu
+    $('hrwt').textContent = tx('✦ rewrite', '✦ yeniden yaz');
+    RWL.innerHTML = opts.map((w) => `<li><span>${w}</span><kbd>↵</kbd></li>`).join('');
+    const lis = [...RWL.children];
+    const z = HP.getBoundingClientRect().width / HP.offsetWidth || 1, rw = RW.offsetWidth, rh = RW.offsetHeight, pad = 40;
+    let pos = b.x + b.w + 50 + rw < Q.cardW - pad ? { x: b.x + b.w + 50, y: b.y - 10 } : { x: Math.max(pad, Math.min(b.x, Q.cardW - rw - pad)), y: S(COM).y + COM.offsetHeight + 24 };
+    set(RW, { ...pos, s: .85, o: 0 }); await tween(RW, { s: 1, o: 1 }, 320, back);
+    for (let i = 0; i < lis.length; i++) {
+      const rr = RW.getBoundingClientRect(), lr = lis[i].getBoundingClientRect();
+      await moveTo(d, pos.x + (lr.right - rr.left) / z - 34, pos.y + (lr.top - rr.top + lr.height * .6) / z, i ? 380 : 600);
+      lis.forEach((l, k) => l.classList.toggle('on', k === i));
+      if (i === 0) { W4.classList.remove('hl'); await swapLetters(W4TXT, opts[0]); W4.classList.add('hl'); } else await scramble(opts[i], 420);
+      await sleep(i < lis.length - 1 ? 480 : 300);
+    }
+    await click(d); lis[2].classList.add('go'); await sleep(220);
+    tween(RW, { o: 0, s: .92 }, 260); W4.classList.remove('hl');
+    await lockIn(word);
+    await sleep(450); selOf[1] = null; labelOf[1] = '';
     await resolve(CL); moveTo(d, ...Q.afterType, 900);
   }
   // b: the app icon is crooked → rotate it straight from the corner handle
